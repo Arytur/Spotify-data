@@ -1,0 +1,70 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Spotify{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Brush+Script" rel="stylesheet">
+    <style>
+        body {
+            background-color: #343a40;
+            color: #17a2b8;
+            font-size: medium;
+            font-weight: 600;
+            padding: 20px;
+        }
+        ul {
+            list-style-type: none;
+        }
+
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <h2 style="font-weight: bolder">Spotify</h2>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+          <img src="{% static 'images/python-logo.png' %}">
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{%  url 'index' %}">Strona główna<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'recently_played' %}">Ostatnio słuchane</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'spotify_playlists' %}">Muzyka według dekad</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'tracks_table' %}">Tabela utworów</a>
+          </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'albums_table' %}">Tabela albumów</a>
+          </li>
+        </ul>
+
+      </div>
+        <div style="float: right">
+            Szukaj artysty
+            <form method="GET" action="{% url 'search' %}" id="searchform">
+                <input class="searchfield" id="searchbox" name="q" type="text" value="{{ request.GET.q }}" placeholder="Search..."/>
+                <button class="btn btn-success">Szukaj</button>
+            </form>
+    </div>
+    </nav><hr>
+
+    <hr><br>
+
+
+
+    {% block content %}
+
+
+    {% endblock %}
+</body>
+</html>

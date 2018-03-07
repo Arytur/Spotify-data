@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="card-link text-center" >
+    {% for album in artist.items %}
+              <div class="card" style="width: 25%; margin: 3%; display: inline-block" >
+                <img class="card-img-top" src="{{ album.images.1.url }}" alt="Card image cap">
+                <div class="card-body">
+                  <h5 class="card-title">{{ artist.name }}</h5>
+                  <p class="card-text">{{ album.name }}</p>
+                </div>
+                <div class="card-footer">
+                  <small class="text-muted">
+                      <a href="{% url 'album' album.id %}" class=" btn btn-success">
+                            Wyświetl
+                      </a>
+                  </small>
+                </div>
+          </div>
+    {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/bar.css' %}">
+<link rel="stylesheet" href="{% static 'css/table-style.css' %}">
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+    <script src="{% static 'js/graph.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+{#    {{ album }}<hr>#}
+    <br>
+    <h3 style="border-bottom: 2px solid white; padding: 4px;"> {{ album.name }} - {{ album.artists.0.name }}</h3>
+    <img src="{{ album.images.1.url }}" style="float: right; margin-right: 40px">
+    <br>
+    <ul style="float: left; width: 50%">
+    {% for track in tracks %}
+        <a href="{% url 'track' track_id=track.id track_artist=album.artists.0.name track_name=track.name %}" class="list-group-item list-group-item-action">
+        <li>{{ track.track_number }}. {{ track.name }}</li>
+        </a><br>
+    {% endfor %}
+    </ul><hr><br>
+
+    <table style="width: 60%; margin: auto" id="data">
+        <thead>
+            <tr>
+                <th>Danceability</th>
+                <th>Speechiness</th>
+                <th>Acousticness</th>
+                <th>Valence</th>
+                <th>Instrumentalness</th>
+                <th>Energy</th>
+                <th>Liveness</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>{{ spot_album.danceability }}</td>
+                <td>{{ spot_album.speechiness }}</td>
+                <td>{{ spot_album.acousticness }}</td>
+                <td>{{ spot_album.valence }}</td>
+                <td>{{ spot_album.instrumentalness }}</td>
+                <td>{{ spot_album.energy }}</td>
+                <td>{{ spot_album.liveness }}</td>
+            </tr>
+        </tbody>
+    </table><br>
+
+
+
+    <div class="chart" style="width: 50%; margin: 5%; float: left">
+        <h3 style="font-weight: bolder">Chart - album features</h3>
+          <table id="data-table" border="1" cellpadding="20" cellspacing="50"
+          summary="Percentage of knowledge acquired during my experience
+          for each technology or language.">
+            <thead>
+              <tr>
+                 <td>&nbsp;</td>
+                 <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for item in album_avg %}
+              <tr>
+                 <th scope="row"></th>
+                 <td>{{ item }}</td>
+                <td></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+    </div>
+
+
+{% endblock %}

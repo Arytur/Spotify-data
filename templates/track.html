@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/bar.css' %}">
+<link rel="stylesheet" href="{% static 'css/table-style.css' %}">
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+    <script src="{% static 'js/graph.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+    <h3 style="margin: auto; text-align: center; font-weight: bolder; color: #dddfe2">{{ track_artist }} - {{ track_name }}</h3><hr>
+
+    <table style="width: 60%; margin: auto" id="data">
+        <thead>
+            <tr>
+                <th>Danceability</th>
+                <th>Speechiness</th>
+                <th>Acousticness</th>
+                <th>Valence</th>
+                <th>Instrumentalness</th>
+                <th>Energy</th>
+                <th>Liveness</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ spot_track.danceability }}</td>
+                <td>{{ spot_track.speechiness }}</td>
+                <td>{{ spot_track.acousticness }}</td>
+                <td>{{ spot_track.valence }}</td>
+                <td>{{ spot_track.instrumentalness }}</td>
+                <td>{{ spot_track.energy }}</td>
+                <td>{{ spot_track.liveness }}</td>
+            </tr>
+        </tbody>
+    </table><br>
+
+
+
+    <div class="chart" style="width: 50%; margin: auto">
+        <h3 style="font-weight: bolder">Chart - track features</h3>
+          <table id="data-table" border="1" cellpadding="20" cellspacing="50"
+          summary="Percentage of knowledge acquired during my experience
+          for each technology or language.">
+            <thead>
+              <tr>
+                 <td>&nbsp;</td>
+                 <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for item in table_track %}
+              <tr>
+                 <th scope="row"></th>
+                 <td>{{ item }}</td>
+                <td></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+    </div>
+
+
+
+{% endblock %}

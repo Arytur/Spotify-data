@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block user %}{{ user.id }}{% endblock %}
+
+{% block content %}
+    <div class="card-link text-center" >
+    {% for release in new_releases %}
+        <div class="card" style="width: 25%; margin: 3%; display: inline-block" >
+            <img class="card-img-top" src="{{ release.images.1.url }}" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{ release.artists.0.name }}</h5>
+                <p class="card-text">{{ release.name }}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        <a href="{% url 'album' release.id %}" class=" btn btn-success">Wyświetl</a>
+                    </small>
+                </div>
+        </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}

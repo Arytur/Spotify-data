@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div style="margin: auto; width: 85%;">
+
+    <div class="card text-white bg-success mb-3" style="width: 18rem; display: inline-block; margin: 3%">
+        <a href="{% url 'playlist' sixties.id %}" class="btn btn-warning">
+            <img class="card-img-top" src="{{ sixties.images.0.url }}" alt="{{ sixties.description }}">
+        </a>
+            <div class="card-body">
+                <p class="card-text" style="font-size: small">{{ sixties.description }}</p>
+            </div>
+
+    </div>
+
+    <div class="card text-white bg-success mb-3" style="width: 18rem; display: inline-block; margin: 3%">
+        <a href="{% url 'playlist' seventies.id %}" class="btn btn-warning">
+          <img class="card-img-top" src="{{ seventies.images.0.url }}" alt="{{ seventies.description }}">
+        </a>
+          <div class="card-body">
+            <p class="card-text" style="font-size: small">{{ seventies.description }}</p>
+          </div>
+
+    </div>
+
+    <div class="card text-white bg-success mb-3" style="width: 18rem; display: inline-block; margin: 3%">
+        <a href="{% url 'playlist' eighties.id %}" class="btn btn-warning">
+          <img class="card-img-top" src="{{ eighties.images.0.url }}" alt="{{ eighties.description }}">
+        </a>
+          <div class="card-body">
+            <p class="card-text" style="font-size: small">{{ eighties.description }}</p>
+          </div>
+    </div>
+
+    <div class="card text-white bg-success mb-3" style="width: 18rem; display: inline-block; margin: 3%">
+        <a href="{% url 'playlist' nineties.id %}" class="btn btn-warning">
+          <img class="card-img-top" src="{{ nineties.images.0.url }}" alt="{{ nineties.description }}">
+        </a>
+          <div class="card-body">
+            <p class="card-text" style="font-size: small">{{ nineties.description }}</p>
+          </div>
+    </div>
+
+    <div class="card text-white bg-success mb-3" style="width: 18rem; display: inline-block; margin: 3%">
+        <a href="{% url 'playlist' twentyzero.id %}" class="btn btn-warning">
+          <img class="card-img-top" src="{{ twentyzero.images.0.url }}" alt="{{ twentyzero.description }}">
+        </a>
+          <div class="card-body">
+            <p class="card-text" style="font-size: small">{{ twentyzero.description }}</p>
+          </div>
+    </div>
+
+    <div class="card text-white bg-success mb-3" style="width: 18rem; display: inline-block; margin: 3%">
+        <a href="{% url 'playlist' twentyten.id %}" class="btn btn-warning">
+          <img class="card-img-top" src="{{ twentyten.images.0.url }}" alt="{{ twentyten.description }}">
+        </a>
+          <div class="card-body">
+            <p class="card-text" style="font-size: small">{{ twentyten.description }}</p>
+          </div>
+    </div>
+    </div>
+{% endblock %}
