@@ -17,6 +17,7 @@ This project was created with use:
 * bootstrap
 
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 The repository which I used the most and helped me a lot:
 
 https://github.com/plamere/spotipy
