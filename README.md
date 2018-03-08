@@ -16,7 +16,9 @@ This project was created with use:
 * jquery
 * bootstrap
 
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 The repository which I used the most and helped me a lot:
+
 https://github.com/plamere/spotipy
 
 I can't use it directly with my project, because it was created in python 2 and flask, so small changes was needed.
