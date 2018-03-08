@@ -1,7 +1,7 @@
 # Spotify-data
 Django project based on Spotify API. 
 
-This is my final project created at Coderslab Bootcamp Backend Developer.
+This is my final project created at Coderslab Bootcamp - Python Backend Developer.
 
 With this application it is possible to requests data from Spotify such as:
 * list of new released albums
