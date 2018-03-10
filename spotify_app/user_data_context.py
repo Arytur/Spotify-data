@@ -1,13 +1,14 @@
 import json
 import base64
+import requests
 
 # Authentication Steps, paramaters, and responses are defined at
 # https://developer.spotify.com/web-api/authorization-guide/
 # Visit this url to see all the steps, parameters, and expected response.
 
 #  Client Keys
-CLIENT_ID = ""
-CLIENT_SECRET = ""
+CLIENT_ID = "9ed7cf85087a4c1780b6db02659a99c3"
+CLIENT_SECRET = "da809e3cf21a490f8898ff65b4ddd1bd"
 BASE64 = 'OWVkN2NmODUwODdhNGMxNzgwYjZkYjAyNjU5YTk5YzM6ZGE4MDllM2NmMjFhNDkwZjg4OThmZjY1YjRkZGQxYmQ='
 
 # Spotify URLS
@@ -47,3 +48,89 @@ def user_context(request):
         'auth_url': auth_url
     }
     return ctx
+
+# ------------------ 4. USER RELATED REQUETS  ---------- #
+
+
+# spotify endpoints
+USER_PROFILE_ENDPOINT = "{}/{}".format(SPOTIFY_API_URL, 'me')
+USER_PLAYLISTS_ENDPOINT = "{}/{}".format(USER_PROFILE_ENDPOINT, 'playlists')
+USER_TOP_ARTISTS_AND_TRACKS_ENDPOINT = "{}/{}".format(
+    USER_PROFILE_ENDPOINT, 'top')  # /<type>
+USER_RECENTLY_PLAYED_ENDPOINT = "{}/{}/{}".format(USER_PROFILE_ENDPOINT,
+                                                  'player', 'recently-played')
+BROWSE_FEATURED_PLAYLISTS = "{}/{}/{}".format(SPOTIFY_API_URL, 'browse',
+                                              'featured-playlists')
+new_releases_endpoint = "{}/{}/{}".format(SPOTIFY_API_URL, 'browse', 'new-releases')
+
+
+# https://developer.spotify.com/web-api/get-users-profile/
+def get_users_profile(auth_header):
+    url = USER_PROFILE_ENDPOINT
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+# https://developer.spotify.com/web-api/get-a-list-of-current-users-playlists/
+def get_users_playlists(auth_header):
+    url = USER_PLAYLISTS_ENDPOINT
+    resp = requests.get(url, headers=auth_header)
+    print(resp.json())
+    return resp.json()
+
+
+# https://developer.spotify.com/web-api/web-api-personalization-endpoints/get-recently-played/
+def get_users_recently_played(auth_header):
+    url = USER_RECENTLY_PLAYED_ENDPOINT
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+# https://developer.spotify.com/web-api/get-list-featured-playlists/
+def get_featured_playlists(auth_header):
+    url = BROWSE_FEATURED_PLAYLISTS
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+def get_new_releases(auth_header):
+    url = new_releases_endpoint
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+def get_album(auth_header, album_id):
+    url = "{}/{}/{}".format(SPOTIFY_API_URL, 'albums', album_id)
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+# https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}
+def get_spotify_playlist(auth_header, playlist_id):
+    url = "{}/users/spotify/playlists/{}?market=US".format(SPOTIFY_API_URL, playlist_id)
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+def get_playlist_tracks(auth_header, playlist_id):
+    url = "{}/users/spotify/playlists/{}/tracks?market=US&limit=50".format(SPOTIFY_API_URL, playlist_id)
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+def get_track_audio_features(auth_header, track_id):
+    url = "{}/audio-features/{}".format(SPOTIFY_API_URL, track_id)
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+def search_result(auth_header, searching):
+    url = "{}/search?q={}&type=artist".format(SPOTIFY_API_URL, searching)
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
+
+
+def artist_albums(auth_header, artist):
+    url = "{}/artists/{}/albums?album_type=album".format(SPOTIFY_API_URL, artist)
+    resp = requests.get(url, headers=auth_header)
+    return resp.json()
