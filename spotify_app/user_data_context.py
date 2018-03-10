@@ -7,9 +7,11 @@ import requests
 # Visit this url to see all the steps, parameters, and expected response.
 
 #  Client Keys
-CLIENT_ID = "9ed7cf85087a4c1780b6db02659a99c3"
-CLIENT_SECRET = "da809e3cf21a490f8898ff65b4ddd1bd"
-BASE64 = 'OWVkN2NmODUwODdhNGMxNzgwYjZkYjAyNjU5YTk5YzM6ZGE4MDllM2NmMjFhNDkwZjg4OThmZjY1YjRkZGQxYmQ='
+CLIENT = json.load(open('keys.json', 'r+'))
+CLIENT_ID = CLIENT['id']
+CLIENT_SECRET = CLIENT['secret']
+BASE64 = base64.b64encode(bytes(CLIENT_ID + ':' + CLIENT_SECRET, 'ascii'))
+BASE64 = BASE64.decode('ascii')
 
 # Spotify URLS
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"

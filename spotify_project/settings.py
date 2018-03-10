@@ -79,11 +79,8 @@ WSGI_APPLICATION = 'spotify_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'NAME': 'spotify_db',
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
