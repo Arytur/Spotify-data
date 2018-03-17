@@ -123,6 +123,7 @@ class AlbumView(View):
 
 class SpotifyPlaylistsView(View):
 
+
     def get(self, request):
         if 'access_token' not in request.session:
             return redirect('callback')
