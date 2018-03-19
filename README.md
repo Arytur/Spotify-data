@@ -17,13 +17,18 @@ But the most important to me was the data delivered together with almost every s
 
 
 This project was created with use:
-* Django
+* Django ver.1.11.6 + requests library
 * jquery
 * bootstrap
 
+## How to install:
+1. You need to create/register your own application on Spotify website [tutorial here](https://developer.spotify.com/web-api/tutorial/) Go to 'My Apps' page and set the address of your website to http://127.0.0.1:8000/ and the address of Redirect URIs to  http://127.0.0.1:8000/callback/q
+2. In return you receive 'Client ID' and 'Client Secret' - you need them to authenticate yourself. Paste these values in the right places in keys.json file in the main folder.
+
+
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-The repository which I used the most and helped me a lot:
+The repository which helped me a lot:
 
 https://github.com/plamere/spotipy
 
