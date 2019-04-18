@@ -4,6 +4,7 @@ from .user_data_context import *
 import requests
 import json
 from .models import Track, Album
+from .tasks import get_access_token
 
 
 class Index(View):
@@ -12,7 +13,7 @@ class Index(View):
         if 'access_token' not in request.session:
             return redirect('callback')
 
-        access_token = request.session.get('access_token')
+        access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
         new_releases = get_new_releases(authorization_header)
@@ -26,7 +27,7 @@ class Callback(View):
     def get(self, request):
         if 'code' in request.GET:
 
-            # pobranie tokena z adresu url
+            # get token from URL
             auth_token = request.GET.get('code')
 
             code_payload = {
@@ -38,7 +39,7 @@ class Callback(View):
             post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
             response_data = json.loads(post_request.text)
 
-            # zapisanie tokenów do sesji
+            # save token to session
             request.session['access_token'] = response_data["access_token"]
             request.session['refresh_token'] = response_data["refresh_token"]
             request.session.set_expiry(response_data["expires_in"])
@@ -53,8 +54,10 @@ class UserRecentlyPlayedView(View):
     def get(self, request):
         if 'access_token' not in request.session:
             return redirect('callback')
-        access_token = request.session.get('access_token')
+        
+        access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+
         recently_played = get_users_recently_played(authorization_header)
         recently_played = recently_played['items']
         return render(request, 'recently_played.html', {'recently_played': recently_played})
@@ -65,8 +68,10 @@ class AlbumView(View):
     def get(self, request, album_id):
         if 'access_token' not in request.session:
             return redirect('callback')
-        access_token = request.session.get('access_token')
+        
+        access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+
         album = get_album(authorization_header, album_id)
         tracks = album['tracks']['items']
 
@@ -127,7 +132,8 @@ class SpotifyPlaylistsView(View):
     def get(self, request):
         if 'access_token' not in request.session:
             return redirect('callback')
-        access_token = request.session.get('access_token')
+
+        access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
         # playlist from different decades
@@ -153,8 +159,10 @@ class PlaylistView(View):
     def get(self, request, playlist_id):
         if 'access_token' not in request.session:
             return redirect('callback')
-        access_token = request.session.get('access_token')
+
+        access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+        
         playlist_tracks = get_playlist_tracks(authorization_header, playlist_id)
         feature_track = []
         for track in playlist_tracks['items']:
@@ -171,8 +179,10 @@ class TrackAudioFeaturesView(View):
     def get(self, request, track_id, track_artist, track_name):
         if 'access_token' not in request.session:
             return redirect('callback')
-        access_token = request.session.get('access_token')
+
+        access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+
         track = get_track_audio_features(authorization_header, track_id)
         if Track.objects.filter(track_id=track_id).exists():
             spot_track = Track.objects.get(track_id=track_id)
@@ -217,8 +227,10 @@ class SearchView(View):
     def get(self, request):
         if 'access_token' not in request.session:
             return redirect('callback')
-        access_token = request.session.get('access_token')
+
+        access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+
         searching = request.GET.get('q')
         result = search_result(authorization_header, searching)
         result_list = result['artists']
@@ -230,8 +242,10 @@ class ArtistView(View):
     def get(self, request, artist_id):
         if 'access_token' not in request.session:
             return redirect('callback')
-        access_token = request.session.get('access_token')
+
+        access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+        
         artist = artist_albums(authorization_header, artist_id)
         return render(request, 'artist.html', {'artist': artist})
 

@@ -7,7 +7,7 @@ import requests
 # Visit this url to see all the steps, parameters, and expected response.
 
 #  Client Keys
-CLIENT = json.load(open('keys.json', 'r+'))
+CLIENT = json.load(open('mykeys.json', 'r+'))
 CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
 BASE64 = base64.b64encode(bytes(CLIENT_ID + ':' + CLIENT_SECRET, 'ascii'))
@@ -35,14 +35,11 @@ auth_query_parameters = {
     "response_type": "code",
     "redirect_uri": REDIRECT_URI,
     "scope": SCOPE,
-    # "state": STATE,
-    # "show_dialog": SHOW_DIALOG_str,
     "client_id": CLIENT_ID
 }
 
 url_args = "&".join(["{}={}".format(key, val) for key, val in auth_query_parameters.items()])
 auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
-
 
 # Context to use in authorizations/callback
 def user_context(request):
