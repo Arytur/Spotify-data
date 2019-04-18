@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .user_data_context import *
+from .user_data_context import SpotifyRequest
 import requests
 import json
 from .models import Track, Album
@@ -16,7 +16,8 @@ class Index(View):
         access_token = get_access_token(request)
         authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
-        new_releases = get_new_releases(authorization_header)
+        spotify = SpotifyRequest(request)
+        new_releases = spotify.get_new_releases()
         new_releases = new_releases['albums']['items']
 
         return render(request, 'main.html', {'new_releases': new_releases})
@@ -55,10 +56,9 @@ class UserRecentlyPlayedView(View):
         if 'access_token' not in request.session:
             return redirect('callback')
         
-        access_token = get_access_token(request)
-        authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+        spotify = SpotifyRequest(request)
 
-        recently_played = get_users_recently_played(authorization_header)
+        recently_played = spotify.get_users_recently_played()
         recently_played = recently_played['items']
         return render(request, 'recently_played.html', {'recently_played': recently_played})
 
@@ -68,11 +68,9 @@ class AlbumView(View):
     def get(self, request, album_id):
         if 'access_token' not in request.session:
             return redirect('callback')
-        
-        access_token = get_access_token(request)
-        authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
-        album = get_album(authorization_header, album_id)
+        spotify = SpotifyRequest(request)
+        album = spotify.get_album(album_id)
         tracks = album['tracks']['items']
 
         if Album.objects.filter(album_id=album_id).exists():
@@ -83,7 +81,7 @@ class AlbumView(View):
                 dict_track = {'danceability': [], 'speechiness': [], 'acousticness': [],
                               'valence': [], 'instrumentalness': [], 'energy': [], 'liveness': []}
                 for track in tracks:
-                    track = get_track_audio_features(authorization_header, track['id'])
+                    track = spotify.get_track_audio_features(track['id'])
                     dict_track['danceability'].append(float(format(track['danceability'], '.3f')))
                     dict_track['speechiness'].append(float(format(track['speechiness'], '.3f')))
                     dict_track['acousticness'].append(float(format(track['acousticness'], '.3f')))
@@ -133,16 +131,15 @@ class SpotifyPlaylistsView(View):
         if 'access_token' not in request.session:
             return redirect('callback')
 
-        access_token = get_access_token(request)
-        authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+        spotify = SpotifyRequest(request)
 
         # playlist from different decades
-        sixties = get_spotify_playlist(authorization_header, '37i9dQZF1DWYoG7spxcDsi')
-        seventies = get_spotify_playlist(authorization_header, '37i9dQZF1DX5vi6QexgFgr')
-        eighties = get_spotify_playlist(authorization_header, '37i9dQZF1DWWC8p2yKdFrw')
-        nineties = get_spotify_playlist(authorization_header, '37i9dQZF1DX1leCUq7he50')
-        twentyzero = get_spotify_playlist(authorization_header, '37i9dQZF1DX5qXEz970M38')
-        twentyten = get_spotify_playlist(authorization_header, '37i9dQZF1DX7bSIS915wSM')
+        sixties = spotify.get_spotify_playlist('37i9dQZF1DWYoG7spxcDsi')
+        seventies = spotify.get_spotify_playlist('37i9dQZF1DX5vi6QexgFgr')
+        eighties = spotify.get_spotify_playlist('37i9dQZF1DWWC8p2yKdFrw')
+        nineties = spotify.get_spotify_playlist('37i9dQZF1DX1leCUq7he50')
+        twentyzero = spotify.get_spotify_playlist('37i9dQZF1DX5qXEz970M38')
+        twentyten = spotify.get_spotify_playlist('37i9dQZF1DX7bSIS915wSM')
         ctx = {
             'sixties': sixties,
             'seventies': seventies,
@@ -160,10 +157,9 @@ class PlaylistView(View):
         if 'access_token' not in request.session:
             return redirect('callback')
 
-        access_token = get_access_token(request)
-        authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+        spotify = SpotifyRequest(request)
         
-        playlist_tracks = get_playlist_tracks(authorization_header, playlist_id)
+        playlist_tracks = spotify.get_playlist_tracks(playlist_id)
         feature_track = []
         for track in playlist_tracks['items']:
             feature_track.append(track['track']['id'])
@@ -180,10 +176,9 @@ class TrackAudioFeaturesView(View):
         if 'access_token' not in request.session:
             return redirect('callback')
 
-        access_token = get_access_token(request)
-        authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+        spotify = SpotifyRequest(request)
 
-        track = get_track_audio_features(authorization_header, track_id)
+        track = spotify.get_track_audio_features(track_id)
         if Track.objects.filter(track_id=track_id).exists():
             spot_track = Track.objects.get(track_id=track_id)
         else:
@@ -228,11 +223,10 @@ class SearchView(View):
         if 'access_token' not in request.session:
             return redirect('callback')
 
-        access_token = get_access_token(request)
-        authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+        spotify = SpotifyRequest(request)
 
         searching = request.GET.get('q')
-        result = search_result(authorization_header, searching)
+        result = spotify.search_result(searching)
         result_list = result['artists']
         return render(request, 'search.html', {'result_list': result_list})
 
@@ -243,10 +237,9 @@ class ArtistView(View):
         if 'access_token' not in request.session:
             return redirect('callback')
 
-        access_token = get_access_token(request)
-        authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+        spotify = SpotifyRequest(request)
         
-        artist = artist_albums(authorization_header, artist_id)
+        artist = spotify.artist_albums(artist_id)
         return render(request, 'artist.html', {'artist': artist})
 
 
