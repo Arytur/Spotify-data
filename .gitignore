@@ -1,3 +1,4 @@
 .vscode/
 db.sqlite3
 *.pyc
+keys.json
