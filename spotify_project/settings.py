@@ -65,7 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'spotify_app.user_data_context.user_context',
+                'spotify_app.api_endpoints.user_context',
             ],
         },
     },

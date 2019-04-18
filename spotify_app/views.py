@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .user_data_context import SpotifyRequest
 import requests
 import json
 from .models import Track, Album
-from .tasks import get_access_token
+from .tasks import get_access_token, SpotifyRequest
+from .api_endpoints import *
 
 
 class Index(View):
