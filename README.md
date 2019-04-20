@@ -15,7 +15,7 @@ But the most important to me was the data delivered together with almost every s
 
 
 This project was created with use:
-* Django ver.1.11.17 + requests library
+* Django ver. 2.2 + requests library ver. 2.21.0
 * jquery
 * bootstrap
 
