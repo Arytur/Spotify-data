@@ -1,20 +1,18 @@
-from django.shortcuts import render, redirect
-from django.views import View
 import requests
 import json
+
+from django.shortcuts import render, redirect
+from django.views import View
+
 from .models import Track, Album
 from .tasks import get_access_token, SpotifyRequest
-from .api_endpoints import *
-
+from .api_endpoints import REDIRECT_URI, BASE64, SPOTIFY_TOKEN_URL
 
 class Index(View):
 
     def get(self, request):
         if 'access_token' not in request.session:
             return redirect('callback')
-
-        access_token = get_access_token(request)
-        authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
         spotify = SpotifyRequest(request)
         new_releases = spotify.get_new_releases()

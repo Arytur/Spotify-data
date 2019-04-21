@@ -1,5 +1,6 @@
 import requests
-from.api_endpoints import *
+
+from .api_endpoints import *
 
 def get_access_token(request):
     return request.session.get('access_token')
