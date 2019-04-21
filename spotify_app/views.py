@@ -16,7 +16,6 @@ class Index(View):
 
         spotify = SpotifyRequest(request)
         new_releases = spotify.get_new_releases()
-        new_releases = new_releases['albums']['items']
 
         return render(request, 'main.html', {'new_releases': new_releases})
 
@@ -55,9 +54,7 @@ class UserRecentlyPlayedView(View):
             return redirect('callback')
         
         spotify = SpotifyRequest(request)
-
         recently_played = spotify.get_users_recently_played()
-        recently_played = recently_played['items']
         return render(request, 'recently_played.html', {'recently_played': recently_played})
 
 
@@ -130,22 +127,7 @@ class SpotifyPlaylistsView(View):
             return redirect('callback')
 
         spotify = SpotifyRequest(request)
-
-        # playlist from different decades
-        sixties = spotify.get_spotify_playlist('37i9dQZF1DWYoG7spxcDsi')
-        seventies = spotify.get_spotify_playlist('37i9dQZF1DX5vi6QexgFgr')
-        eighties = spotify.get_spotify_playlist('37i9dQZF1DWWC8p2yKdFrw')
-        nineties = spotify.get_spotify_playlist('37i9dQZF1DX1leCUq7he50')
-        twentyzero = spotify.get_spotify_playlist('37i9dQZF1DX5qXEz970M38')
-        twentyten = spotify.get_spotify_playlist('37i9dQZF1DX7bSIS915wSM')
-        ctx = {
-            'sixties': sixties,
-            'seventies': seventies,
-            'eighties': eighties,
-            'nineties': nineties,
-            'twentyzero': twentyzero,
-            'twentyten': twentyten
-        }
+        ctx = spotify.get_spotify_playlists()
         return render(request, 'spotify_playlists.html', ctx)
 
 

@@ -18,8 +18,6 @@ SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SPOTIFY_API_BASE_URL = "https://api.spotify.com"
 API_VERSION = "v1"
-SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
-
 
 # Server-side Parameters
 CLIENT_SIDE_URL = "http://127.0.0.1"
@@ -50,6 +48,65 @@ def user_context(request):
     return ctx
 
 USER_PROFILE_ENDPOINT = "{}/{}".format(SPOTIFY_API_URL, 'me')
-USER_RECENTLY_PLAYED_ENDPOINT = "{}/{}/{}".format(USER_PROFILE_ENDPOINT,
-                                                  'player', 'recently-played')
-NEW_RELEASES_ENDPOINT = "{}/{}/{}".format(SPOTIFY_API_URL, 'browse', 'new-releases')
+SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
+
+# playlist from different decades
+PLAYLISTS_URI = dict([
+    ("sixties", "37i9dQZF1DWYoG7spxcDsi"),
+    ("seventies", "37i9dQZF1DX5vi6QexgFgr"),
+    ("eighties", "37i9dQZF1DWWC8p2yKdFrw"),
+    ("nineties", "37i9dQZF1DX1leCUq7he50"),
+    ("twentyzero", "37i9dQZF1DX5qXEz970M38"),
+    ("twentyten", "37i9dQZF1DX7bSIS915wSM"),
+])
+
+
+API_ENDPOINTS = dict([
+
+    # https://developer.spotify.com/web-api/web-api-personalization-endpoints/get-recently-played/
+    ("user_recently_played", "{}/{}/{}".format(
+        USER_PROFILE_ENDPOINT,
+        'player', 
+        'recently-played')),
+
+    # https://api.spotify.com/v1/browse/new-releases    
+    ("new_releases", "{}/{}/{}".format(
+        SPOTIFY_API_URL, 
+        'browse', 
+        'new-releases')),
+
+    # https://api.spotify.com/v1/albums/{id}
+    ("album", "{}/{}/".format(
+        SPOTIFY_API_URL, 
+        'albums')),
+
+    # https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}
+    ("spotify_playlists", (
+        "{}/users/spotify/playlists/".format(SPOTIFY_API_URL),
+        "?market=US")
+        ),
+
+    # https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}/tracks
+    ("playlist_track", (
+        "{}/users/spotify/playlists/".format(SPOTIFY_API_URL),
+        "/tracks?market=US&limit=50"
+        )),
+
+    # https://api.spotify.com/v1/audio-features/{id}
+    ("track_audio_feature", "{}/audio-features/".format(
+        SPOTIFY_API_URL)),
+
+    # https://api.spotify.com/v1/search
+    ("search", (
+        "{}/search?q=".format(SPOTIFY_API_URL), 
+        "&type=artist"
+        )),
+
+    # https://api.spotify.com/v1/artists/{id}/albums
+    ("artist_albums", (
+        "{}/artists/".format(SPOTIFY_API_URL), 
+        "/albums?album_type=album"
+        ))
+])
+
+
