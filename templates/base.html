@@ -31,28 +31,28 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="{%  url 'index' %}">Strona główna<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{%  url 'index' %}">Home<span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'recently_played' %}">Ostatnio słuchane</a>
+            <a class="nav-link" href="{% url 'recently_played' %}">Recently played</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'spotify_playlists' %}">Muzyka według dekad</a>
+            <a class="nav-link" href="{% url 'spotify_playlists' %}">Music by decades</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'tracks_table' %}">Tabela utworów</a>
+            <a class="nav-link" href="{% url 'tracks_table' %}">Tracks tabel</a>
           </li>
             <li class="nav-item">
-            <a class="nav-link" href="{% url 'albums_table' %}">Tabela albumów</a>
+            <a class="nav-link" href="{% url 'albums_table' %}">Albums tabel</a>
           </li>
         </ul>
 
       </div>
         <div style="float: right">
-            Szukaj artysty
+            Seach an artist
             <form method="GET" action="{% url 'search' %}" id="searchform">
                 <input class="searchfield" id="searchbox" name="q" type="text" value="{{ request.GET.q }}" placeholder="Search..."/>
-                <button class="btn btn-success">Szukaj</button>
+                <button class="btn btn-success">Search</button>
             </form>
     </div>
     </nav><hr>
