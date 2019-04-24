@@ -11,7 +11,7 @@
 
 {% block content %}
 
-    <h3 style="margin: auto; text-align: center; font-weight: bolder; color: #dddfe2">{{ track_artist }} - {{ track_name }}</h3><hr>
+    <h3 style="margin: auto; text-align: center; font-weight: bolder; color: #dddfe2">{{ track.track_artist }} - {{ track.track_name }}</h3><hr>
 
     <table style="width: 60%; margin: auto" id="data">
         <thead>
@@ -27,13 +27,13 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ spot_track.danceability|floatformat:3 }}</td>
-                <td>{{ spot_track.speechiness|floatformat:3 }}</td>
-                <td>{{ spot_track.acousticness|floatformat:3 }}</td>
-                <td>{{ spot_track.valence|floatformat:3 }}</td>
-                <td>{{ spot_track.instrumentalness|floatformat:3 }}</td>
-                <td>{{ spot_track.energy|floatformat:3 }}</td>
-                <td>{{ spot_track.liveness|floatformat:3 }}</td>
+                <td>{{ track.danceability|floatformat:3 }}</td>
+                <td>{{ track.speechiness|floatformat:3 }}</td>
+                <td>{{ track.acousticness|floatformat:3 }}</td>
+                <td>{{ track.valence|floatformat:3 }}</td>
+                <td>{{ track.instrumentalness|floatformat:3 }}</td>
+                <td>{{ track.energy|floatformat:3 }}</td>
+                <td>{{ track.liveness|floatformat:3 }}</td>
             </tr>
         </tbody>
     </table><br>
@@ -50,7 +50,7 @@
               </tr>
             </thead>
             <tbody>
-            {% for item in table_track %}
+            {% for item in chart %}
               <tr>
                  <th scope="row"></th>
                  <td>{{ item }}</td>

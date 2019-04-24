@@ -16,6 +16,21 @@ class Track(models.Model):
     def __str__(self):
         return self.track_artist + ' - ' + self.track_name
 
+    def get_features(self):
+        return [
+            self.danceability,
+            self.speechiness,
+            self.acousticness,
+            self.valence,
+            self.instrumentalness,
+            self.energy,
+            self.liveness
+        ]
+
+    def get_features_for_chart(self):
+        features = self.get_features()
+        return [int(feat * 100) for feat in features]
+
 
 class Album(models.Model):
     album_id = models.CharField(max_length=32, unique=True)
