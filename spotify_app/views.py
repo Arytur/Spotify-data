@@ -77,23 +77,23 @@ class AlbumView(View):
                               'valence': [], 'instrumentalness': [], 'energy': [], 'liveness': []}
                 for track in tracks:
                     track = spotify.get_track_audio_features(track['id'])
-                    dict_track['danceability'].append(float(format(track['danceability'], '.3f')))
-                    dict_track['speechiness'].append(float(format(track['speechiness'], '.3f')))
-                    dict_track['acousticness'].append(float(format(track['acousticness'], '.3f')))
-                    dict_track['valence'].append(float(format(track['valence'], '.3f')))
-                    dict_track['instrumentalness'].append(float(format(track['instrumentalness'], '.3f')))
-                    dict_track['energy'].append(float(format(track['energy'], '.3f')))
-                    dict_track['liveness'].append(float(format(track['liveness'], '.3f')))
+                    dict_track['danceability'].append(track['danceability'])
+                    dict_track['speechiness'].append(track['speechiness'])
+                    dict_track['acousticness'].append(track['acousticness'])
+                    dict_track['valence'].append(track['valence'])
+                    dict_track['instrumentalness'].append(track['instrumentalness'])
+                    dict_track['energy'].append(track['energy'])
+                    dict_track['liveness'].append(track['liveness'])
 
                 spot_album = Album.objects.create(album_id=album_id, album_artist=album['artists'][0]['name'],
                                                 album_name=album['name'],
-                                                danceability=float(format(sum(dict_track['danceability']) / tracks_number, '.3f')),
-                                                speechiness=float(format(sum(dict_track['speechiness']) / tracks_number, '.3f')),
-                                                acousticness=float(format(sum(dict_track['acousticness']) / tracks_number, '.3f')),
-                                                valence=float(format(sum(dict_track['valence']) / tracks_number, '.3f')),
-                                                instrumentalness=float(format(sum(dict_track['instrumentalness']) / tracks_number, '.3f')),
-                                                energy=float(format(sum(dict_track['energy']) / tracks_number, '.3f')),
-                                                liveness=float(format(sum(dict_track['liveness']) / tracks_number, '.3f')))
+                                                danceability=sum(dict_track['danceability']) / tracks_number,
+                                                speechiness=sum(dict_track['speechiness']) / tracks_number,
+                                                acousticness=sum(dict_track['acousticness']) / tracks_number,
+                                                valence=sum(dict_track['valence']) / tracks_number,
+                                                instrumentalness=sum(dict_track['instrumentalness']) / tracks_number,
+                                                energy=sum(dict_track['energy']) / tracks_number,
+                                                liveness=sum(dict_track['liveness']) / tracks_number)
 
             except KeyError:
                 ctx = {
@@ -157,21 +157,21 @@ class TrackAudioFeaturesView(View):
             return redirect('callback')
 
         spotify = SpotifyRequest(request)
-
         track = spotify.get_track_audio_features(track_id)
+
         if Track.objects.filter(track_id=track_id).exists():
             spot_track = Track.objects.get(track_id=track_id)
         else:
-            spot_track = Track.objects.create(track_id=track_id,
-                                              track_artist=track_artist,
-                                              track_name=track_name,
-                                              danceability=float(format(track['danceability'], '.3f')),
-                                              speechiness=float(format(track['speechiness'], '.3f')),
-                                              acousticness=float(format(track['acousticness'], '.3f')),
-                                              valence=float(format(track['valence'], '.3f')),
-                                              instrumentalness=float(format(track['instrumentalness'], '.3f')),
-                                              energy=float(format(track['energy'], '.3f')),
-                                              liveness=float(format(track['liveness'], '.3f')))
+            spot_track = Track.objects.create(track_id = track_id,
+                                              track_artist = track_artist,
+                                              track_name = track_name,
+                                              danceability = track['danceability'],
+                                              speechiness = track['speechiness'],
+                                              acousticness = track['acousticness'],
+                                              valence = track['valence'],
+                                              instrumentalness = track['instrumentalness'],
+                                              energy = track['energy'],
+                                              liveness = track['liveness'])
         table_track = [
             int(track['danceability'] * 100),
             int(track['speechiness'] * 100),
