@@ -27,13 +27,13 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ spot_track.danceability }}</td>
-                <td>{{ spot_track.speechiness }}</td>
-                <td>{{ spot_track.acousticness }}</td>
-                <td>{{ spot_track.valence }}</td>
-                <td>{{ spot_track.instrumentalness }}</td>
-                <td>{{ spot_track.energy }}</td>
-                <td>{{ spot_track.liveness }}</td>
+                <td>{{ spot_track.danceability|floatformat:3 }}</td>
+                <td>{{ spot_track.speechiness|floatformat:3 }}</td>
+                <td>{{ spot_track.acousticness|floatformat:3 }}</td>
+                <td>{{ spot_track.valence|floatformat:3 }}</td>
+                <td>{{ spot_track.instrumentalness|floatformat:3 }}</td>
+                <td>{{ spot_track.energy|floatformat:3 }}</td>
+                <td>{{ spot_track.liveness|floatformat:3 }}</td>
             </tr>
         </tbody>
     </table><br>

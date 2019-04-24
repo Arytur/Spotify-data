@@ -47,8 +47,8 @@ def user_context(request):
     }
     return ctx
 
-USER_PROFILE_ENDPOINT = "{}/{}".format(SPOTIFY_API_URL, 'me')
 SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
+USER_PROFILE_ENDPOINT = "{}/{}".format(SPOTIFY_API_URL, 'me')
 
 # playlist from different decades
 PLAYLISTS_URI = dict([
