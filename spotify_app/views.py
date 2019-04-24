@@ -156,36 +156,25 @@ class TrackAudioFeaturesView(View):
         if 'access_token' not in request.session:
             return redirect('callback')
 
-        spotify = SpotifyRequest(request)
-        track = spotify.get_track_audio_features(track_id)
-
         if Track.objects.filter(track_id=track_id).exists():
-            spot_track = Track.objects.get(track_id=track_id)
+            track = Track.objects.get(track_id=track_id)
         else:
-            spot_track = Track.objects.create(track_id = track_id,
-                                              track_artist = track_artist,
-                                              track_name = track_name,
-                                              danceability = track['danceability'],
-                                              speechiness = track['speechiness'],
-                                              acousticness = track['acousticness'],
-                                              valence = track['valence'],
-                                              instrumentalness = track['instrumentalness'],
-                                              energy = track['energy'],
-                                              liveness = track['liveness'])
-        table_track = [
-            int(track['danceability'] * 100),
-            int(track['speechiness'] * 100),
-            int(track['acousticness'] * 100),
-            int(track['valence'] * 100),
-            int(track['instrumentalness'] * 100),
-            int(track['energy'] * 100),
-            int(track['liveness'] * 100)]
+            spotify = SpotifyRequest(request)
+            features = spotify.get_track_audio_features(track_id)
+            track = Track.objects.create(track_id = track_id,
+                                         track_artist = track_artist,
+                                         track_name = track_name,
+                                         danceability = features['danceability'],
+                                         speechiness = features['speechiness'],
+                                         acousticness = features['acousticness'],
+                                         valence = features['valence'],
+                                         instrumentalness = features['instrumentalness'],
+                                         energy = features['energy'],
+                                         liveness = features['liveness'])
+
         ctx = {
             'track': track,
-            'spot_track': spot_track,
-            'table_track': table_track,
-            'track_artist': track_artist,
-            'track_name': track_name
+            'chart': track.get_features_for_chart()
         }
         return render(request, 'track.html', ctx)
 
