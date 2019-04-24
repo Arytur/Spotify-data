@@ -138,15 +138,13 @@ class PlaylistView(View):
             return redirect('callback')
 
         spotify = SpotifyRequest(request)
-        
         playlist_tracks = spotify.get_playlist_tracks(playlist_id)
-        feature_track = []
-        for track in playlist_tracks['items']:
-            feature_track.append(track['track']['id'])
+        feature_track = [track['track']['id'] for track in playlist_tracks['items']]
+
         ctx = {
-            'playlist_tracks': playlist_tracks,
-            'feature_track': feature_track
+            'playlist_tracks': playlist_tracks
         }
+        
         return render(request, 'playlist.html', ctx)
 
 
