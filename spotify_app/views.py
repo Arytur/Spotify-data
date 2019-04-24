@@ -65,56 +65,37 @@ class AlbumView(View):
             return redirect('callback')
 
         spotify = SpotifyRequest(request)
-        album = spotify.get_album(album_id)
-        tracks = album['tracks']['items']
+        album_data = spotify.get_album(album_id)
+        tracks = album_data['tracks']['items']
 
         if Album.objects.filter(album_id=album_id).exists():
-            spot_album = Album.objects.get(album_id=album_id)
+            album = Album.objects.get(album_id=album_id)
         else:
             try:
-                tracks_number = len(tracks)
-                dict_track = {'danceability': [], 'speechiness': [], 'acousticness': [],
-                              'valence': [], 'instrumentalness': [], 'energy': [], 'liveness': []}
-                for track in tracks:
-                    track = spotify.get_track_audio_features(track['id'])
-                    dict_track['danceability'].append(track['danceability'])
-                    dict_track['speechiness'].append(track['speechiness'])
-                    dict_track['acousticness'].append(track['acousticness'])
-                    dict_track['valence'].append(track['valence'])
-                    dict_track['instrumentalness'].append(track['instrumentalness'])
-                    dict_track['energy'].append(track['energy'])
-                    dict_track['liveness'].append(track['liveness'])
-
-                spot_album = Album.objects.create(album_id=album_id, album_artist=album['artists'][0]['name'],
-                                                album_name=album['name'],
-                                                danceability=sum(dict_track['danceability']) / tracks_number,
-                                                speechiness=sum(dict_track['speechiness']) / tracks_number,
-                                                acousticness=sum(dict_track['acousticness']) / tracks_number,
-                                                valence=sum(dict_track['valence']) / tracks_number,
-                                                instrumentalness=sum(dict_track['instrumentalness']) / tracks_number,
-                                                energy=sum(dict_track['energy']) / tracks_number,
-                                                liveness=sum(dict_track['liveness']) / tracks_number)
-
+                album_features = Album.calculate_album_features(spotify, tracks)
             except KeyError:
                 ctx = {
-                    'album': album,
+                    'album': album_data,
                     'tracks': tracks
                 }
                 return render(request, 'album.html', ctx)
-        album_avg = [
-            int(spot_album.danceability * 100),
-            int(spot_album.speechiness * 100),
-            int(spot_album.acousticness * 100),
-            int(spot_album.valence * 100),
-            int(spot_album.instrumentalness * 100),
-            int(spot_album.energy * 100),
-            int(spot_album.liveness * 100)]
+
+            album = Album.objects.create(album_id=album_id, 
+                                         album_artist=album_data['artists'][0]['name'],
+                                         album_name=album_data['name'],
+                                         album_image=album_data['images'][1]['url'],
+                                         danceability=album_features['danceability'],
+                                         speechiness=album_features['speechiness'],
+                                         acousticness=album_features['acousticness'],
+                                         valence=album_features['valence'],
+                                         instrumentalness=album_features['instrumentalness'],
+                                         energy=album_features['energy'],
+                                         liveness=album_features['liveness'])
 
         ctx = {
             'album': album,
             'tracks': tracks,
-            'spot_album': spot_album,
-            'album_avg': album_avg
+            'album_avg': album.get_features_for_chart()
         }
         return render(request, 'album.html', ctx)
 
@@ -144,7 +125,7 @@ class PlaylistView(View):
         ctx = {
             'playlist_tracks': playlist_tracks
         }
-        
+
         return render(request, 'playlist.html', ctx)
 
 
