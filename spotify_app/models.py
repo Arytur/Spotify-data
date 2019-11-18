@@ -6,12 +6,12 @@ class Track(models.Model):
     Model for the single track.
     """
 
-    id = models.CharField(max_length=32, unique=True)
+    id = models.CharField(max_length=32, primary_key=True, unique=True)
     name = models.CharField(max_length=128)
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+    artist = models.ForeignKey("Artist", on_delete=models.CASCADE)
 
     def __str__(self):
-        return f("{self.name} - {self.artist.name}")
+        return f"{self.name} - {self.artist.name}"
 
 
 class Album(models.Model):
@@ -19,13 +19,13 @@ class Album(models.Model):
     Model for the single album.
     """
 
-    id = models.CharField(max_length=32, unique=True)
+    id = models.CharField(max_length=32, primary_key=True, unique=True)
     name = models.CharField(max_length=128)
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+    artist = models.ForeignKey("Artist", on_delete=models.CASCADE)
     image = models.URLField(null=True)
 
     def __str__(self):
-        return f("{self.name} - {self.artist.name}")
+        return f"{self.name} - {self.artist.name}"
 
 
 class Artist(models.Model):
