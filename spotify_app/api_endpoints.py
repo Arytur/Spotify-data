@@ -3,13 +3,14 @@ import base64
 import requests
 import os
 
+from spotify_project.settings import BASE_DIR
+
 # Authentication Steps, paramaters, and responses are defined at
 # https://developer.spotify.com/web-api/authorization-guide/
 # Visit this url to see all the steps, parameters, and expected response.
 
 #  Client Keys
-cwd = os.path.dirname(os.path.abspath(__file__))
-mykeys_file = os.path.join(cwd, "mykeys.json")
+mykeys_file = os.path.join(BASE_DIR, "mykeys.json")
 CLIENT = json.load(open(mykeys_file, "r+"))
 CLIENT_ID = CLIENT["id"]
 CLIENT_SECRET = CLIENT["secret"]

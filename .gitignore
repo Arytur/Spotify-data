@@ -1,5 +1,4 @@
 .vscode/
 db.sqlite3
 *.pyc
-mykeys.json
 .python-version
