@@ -7,7 +7,7 @@ from django.views import View
 
 from .api_endpoints import REDIRECT_URI, BASE64, SPOTIFY_TOKEN_URL
 from .decorators import token_validation
-from .models import Track, Album
+from .models import Album, Artist, Features, Track, TrackFeatures
 from .tasks import get_access_token, SpotifyRequest
 
 
@@ -62,39 +62,56 @@ class UserRecentlyPlayedView(View):
 
 @method_decorator(token_validation, name='dispatch')
 class AlbumView(View):
+    """
+    Display collected info about album.
+    image, tracks, features
+    """
+
     def get(self, request, album_id):
 
-        spotify = SpotifyRequest(request)
-        album_data = spotify.get_album(album_id)
-        tracks = album_data["tracks"]["items"]
+        # TODO: save all track from this album
 
-        if Album.objects.filter(album_id=album_id).exists():
-            album = Album.objects.get(album_id=album_id)
-        else:
-            try:
-                album_features = Album.calculate_album_features(spotify, tracks)
-            except KeyError:
-                ctx = {"album": album_data, "tracks": tracks}
-                return render(request, "album.html", ctx)
-
+        try:
+            album = Album.objects.get(id=album_id)
+        except Album.DoesNotExist:
+            spotify = SpotifyRequest(request)
+            album_data = spotify.get_album(album_id)
+            artist, _ = Artist.objects.get_or_create(name=album_data["artists"][0]["name"])
             album = Album.objects.create(
-                album_id=album_id,
-                album_artist=album_data["artists"][0]["name"],
-                album_name=album_data["name"],
-                album_image=album_data["images"][1]["url"],
-                danceability=album_features["danceability"],
-                speechiness=album_features["speechiness"],
-                acousticness=album_features["acousticness"],
-                valence=album_features["valence"],
-                instrumentalness=album_features["instrumentalness"],
-                energy=album_features["energy"],
-                liveness=album_features["liveness"],
+                id=album_id,
+                name=album_data["name"],
+                artist=artist,
+                image=album_data["images"][1]["url"],
             )
+
+            tracks = album_data["tracks"]["items"]
+
+            # TODO: calculate features for album.
+            # try:
+            #     tracks = album_data["tracks"]["items"]
+            #     album_features = Album.calculate_album_features(spotify, tracks)
+            # except KeyError:
+            #     ctx = {"album": album_data, "tracks": tracks}
+            #     return render(request, "album.html", ctx)
+
+            # features = Features.objects.create(
+            #     danceability=album_features["danceability"],
+            #     speechiness=album_features["speechiness"],
+            #     acousticness=album_features["acousticness"],
+            #     valence=album_features["valence"],
+            #     instrumentalness=album_features["instrumentalness"],
+            #     energy=album_features["energy"],
+            #     liveness=album_features["liveness"],
+            # )
+            # AlbumFeatures.objects.create(
+            #         album=album,
+            #         features=features
+            # )
 
         ctx = {
             "album": album,
             "tracks": tracks,
-            "album_avg": album.get_features_for_chart(),
+            # "album_avg": album.get_features_for_chart(),
         }
         return render(request, "album.html", ctx)
 
@@ -123,17 +140,24 @@ class PlaylistView(View):
 
 @method_decorator(token_validation, name='dispatch')
 class TrackAudioFeaturesView(View):
+
     def get(self, request, track_id, track_artist, track_name):
 
-        if Track.objects.filter(track_id=track_id).exists():
-            track = Track.objects.get(track_id=track_id)
-        else:
+        try:
+            track = Track.objects.get(id=track_id)
+        except Track.DoesNotExist:
+            # TODO: move creating it to another file
             spotify = SpotifyRequest(request)
-            features = spotify.get_track_audio_features(track_id)
+
+            artist, _ = Artist.objects.get_or_create(name=album_data["artists"][0]["name"])
             track = Track.objects.create(
-                track_id=track_id,
-                track_artist=track_artist,
-                track_name=track_name,
+                id=track_id,
+                artist=artist,
+                name=track_name,
+            )
+
+            features = spotify.get_track_audio_features(track_id)
+            features = Features.objects.create(
                 danceability=features["danceability"],
                 speechiness=features["speechiness"],
                 acousticness=features["acousticness"],
@@ -142,12 +166,20 @@ class TrackAudioFeaturesView(View):
                 energy=features["energy"],
                 liveness=features["liveness"],
             )
+            track_feature = TrackFeatures.objects.create(
+                    track=track,
+                    features=features)
+            chart_numbers = features.get_features_for_chart
 
-        ctx = {"track": track, "chart": track.get_features_for_chart()}
+        ctx = {"track": track, "features": features, "chart": chart_numbers} 
         return render(request, "track.html", ctx)
 
 
 class TracksTableView(View):
+    """
+    Display table with all tracks collected.
+    """
+
     def get(self, request):
         tracks = Track.objects.all()
         return render(request, "tracks_table.html", {"tracks": tracks})

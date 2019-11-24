@@ -1,6 +1,14 @@
 from django.db import models
 
 
+class Artist(models.Model):
+    """
+    Model for the single artist.
+    """
+
+    name = models.CharField(max_length=128)
+
+
 class Track(models.Model):
     """
     Model for the single track.
@@ -8,7 +16,7 @@ class Track(models.Model):
 
     id = models.CharField(max_length=32, primary_key=True, unique=True)
     name = models.CharField(max_length=128)
-    artist = models.ForeignKey("Artist", on_delete=models.CASCADE)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name} - {self.artist.name}"
@@ -21,19 +29,11 @@ class Album(models.Model):
 
     id = models.CharField(max_length=32, primary_key=True, unique=True)
     name = models.CharField(max_length=128)
-    artist = models.ForeignKey("Artist", on_delete=models.CASCADE)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     image = models.URLField(null=True)
 
     def __str__(self):
         return f"{self.name} - {self.artist.name}"
-
-
-class Artist(models.Model):
-    """
-    Model for the single artist.
-    """
-
-    name = models.CharField(max_length=128)
 
 
 class Features(models.Model):
@@ -86,3 +86,15 @@ class Features(models.Model):
             dict_of_features[key] = sum(dict_of_features[key]) / tracks_number
 
         return dict_of_features
+
+
+class TrackFeatures(models.Model):
+
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    features = models.ForeignKey(Features, on_delete=models.CASCADE)
+
+
+class AlbumFeatures(models.Model):
+
+    album = models.ForeignKey(Album, on_delete=models.CASCADE)
+    features = models.ForeignKey(Features, on_delete=models.CASCADE)
