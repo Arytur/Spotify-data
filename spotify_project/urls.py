@@ -17,37 +17,12 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-from spotify_app.views import (
-    Index,
-    Callback,
-    UserRecentlyPlayedView,
-    AlbumView,
-    SpotifyPlaylistsView,
-    PlaylistView,
-    TrackAudioFeaturesView,
-    TracksTableView,
-    AlbumTableView,
-    SearchView,
-    ArtistView
-) 
-
-# TODO: include for the app urls
-# TODO: fix track url, leave only id and change it to slug
+from spotify_app.views import Callback
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', Index.as_view(), name='index'),
     path('callback/q', Callback.as_view(), name='callback'),
-    path('recently_played/', UserRecentlyPlayedView.as_view(), name='recently_played'),
-    path('album/<slug:album_id>/', AlbumView.as_view(), name='album'),
-    path('spotify_playlists/', SpotifyPlaylistsView.as_view(), name='spotify_playlists'),
-    path('playlist/<slug:playlist_id>/', PlaylistView.as_view(), name='playlist'),
-    re_path('^track/(?P<track_id>[a-zA-Z0-9]+)/(?P<track_artist>.*)/(?P<track_name>.*)/$',
-        TrackAudioFeaturesView.as_view(), name='track'),
-    path('tracks_table/', TracksTableView.as_view(), name='tracks_table'),
-    path('albums_table/', AlbumTableView.as_view(), name='albums_table'),
-    path('search/', SearchView.as_view(), name='search'),
-    path('artist/<slug:artist_id>/', ArtistView.as_view(), name='artist')
+    path('', include('spotify_app.urls')),
 ]
 
 if settings.DEBUG:
