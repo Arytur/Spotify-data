@@ -9,7 +9,17 @@ from django.views import View
 from .api_endpoints import REDIRECT_URI, BASE64, SPOTIFY_TOKEN_URL
 from .decorators import token_validation
 from .models import Album, Artist, Features, Track, TrackFeatures
-from .tasks import get_access_token, SpotifyRequest
+from .tasks import (
+    get_new_releases,
+    get_user_recently_played,
+    get_track,
+    get_track_audio_features,
+    get_album,
+    artist_albums,
+    get_spotify_playlists,
+    get_playlist_tracks,
+    search_result,
+)
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -20,8 +30,7 @@ class Index(View):
 
     def get(self, request):
 
-        spotify = SpotifyRequest(request)
-        new_releases = spotify.get_new_releases()
+        new_releases = get_new_releases(request)
 
         return render(request, "index.html", {"new_releases": new_releases})
 
@@ -30,8 +39,7 @@ class Index(View):
 class UserRecentlyPlayedView(View):
     def get(self, request):
 
-        spotify = SpotifyRequest(request)
-        recently_played = spotify.get_user_recently_played()
+        recently_played = get_user_recently_played(request)
         return render(
             request, "recently_played.html", {"recently_played": recently_played}
         )
@@ -42,24 +50,22 @@ class TrackDetailView(View):
     def get(self, request, track_id):
 
         try:
-            # TODO: Omg, change it...
+            # TODO: coould be better?
             track = Track.objects.get(id=track_id)
-            track_features = track.trackfeatures_set.first()
+            track_features = track.trackfeatures_set.get()
             features = track_features.features
             chart_numbers = features.get_features_for_chart
         except Track.DoesNotExist:
             # TODO: move creating it to another file
-            spotify = SpotifyRequest(request)
-            track_data = spotify.get_track(track_id)
+            track_data = get_track(request, track_id)
 
-            # TODO: add Artist for a given track
             artist, _ = Artist.objects.get_or_create(
                 name=track_data["artists"][0]["name"]
             )
             track_name = track_data["name"]
             track = Track.objects.create(id=track_id, artist=artist, name=track_name)
 
-            features = spotify.get_track_audio_features(track_id)
+            features = get_track_audio_features(request, track_id)
             features = Features.objects.create(
                 danceability=features["danceability"],
                 speechiness=features["speechiness"],
@@ -100,8 +106,7 @@ class AlbumDetailView(View):
         try:
             album = Album.objects.get(id=album_id)
         except Album.DoesNotExist:
-            spotify = SpotifyRequest(request)
-            album_data = spotify.get_album(album_id)
+            album_data = get_album(request, album_id)
             artist, _ = Artist.objects.get_or_create(
                 name=album_data["artists"][0]["name"]
             )
@@ -138,7 +143,7 @@ class AlbumDetailView(View):
 
         ctx = {
             "album": album,
-            "tracks": tracks,
+            # "tracks": tracks,
             # "album_avg": album.get_features_for_chart(),
         }
         return render(request, "album.html", ctx)
@@ -154,9 +159,7 @@ class AlbumTableView(View):
 class ArtistDetailView(View):
     def get(self, request, artist_id):
 
-        spotify = SpotifyRequest(request)
-
-        artist = spotify.artist_albums(artist_id)
+        artist = artist_albums(request, artist_id)
         return render(request, "artist.html", {"artist": artist})
 
 
@@ -164,8 +167,7 @@ class ArtistDetailView(View):
 class SpotifyPlaylistsView(View):
     def get(self, request):
 
-        spotify = SpotifyRequest(request)
-        ctx = spotify.get_spotify_playlists()
+        ctx = get_spotify_playlists(request)
         return render(request, "spotify_playlists.html", ctx)
 
 
@@ -173,8 +175,7 @@ class SpotifyPlaylistsView(View):
 class PlaylistDetailView(View):
     def get(self, request, playlist_id):
 
-        spotify = SpotifyRequest(request)
-        playlist_tracks = spotify.get_playlist_tracks(playlist_id)
+        playlist_tracks = get_playlist_tracks(request, playlist_id)
         feature_track = [track["track"]["id"] for track in playlist_tracks["items"]]
 
         ctx = {"playlist_tracks": playlist_tracks}
@@ -186,10 +187,8 @@ class PlaylistDetailView(View):
 class SearchView(View):
     def get(self, request):
 
-        spotify = SpotifyRequest(request)
-
         searching = request.GET.get("q")
-        result = spotify.search_result(searching)
+        result = search_result(request, searching)
         result_list = result["artists"]
         return render(request, "search.html", {"result_list": result_list})
 

@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 
 from spotify_app import views
 
@@ -10,9 +10,8 @@ urlpatterns = [
         views.UserRecentlyPlayedView.as_view(),
         name="recently_played",
     ),
-    # TODO: fix track url, leave only id and change it to slug
-    re_path(
-        "^track/(?P<track_id>[a-zA-Z0-9]+)/$",
+    path(
+        "track/<slug:track_id>/",
         views.TrackDetailView.as_view(),
         name="track",
     ),
