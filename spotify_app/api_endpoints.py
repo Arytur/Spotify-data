@@ -11,10 +11,8 @@ from spotify_project.settings import BASE_DIR
 
 #  Client Keys
 mykeys_file = os.path.join(BASE_DIR, "mykeys.json")
-CLIENT = json.load(open(mykeys_file, "r+"))
-CLIENT_ID = CLIENT["id"]
-CLIENT_SECRET = CLIENT["secret"]
-BASE64 = base64.b64encode(bytes(CLIENT_ID + ":" + CLIENT_SECRET, "ascii"))
+client = json.load(open(mykeys_file, "r+"))
+BASE64 = base64.b64encode(bytes(client["id"] + ":" + client["secret"], "ascii"))
 BASE64 = BASE64.decode("ascii")
 
 # Spotify URLS
@@ -37,7 +35,7 @@ auth_query_parameters = {
     "response_type": "code",
     "redirect_uri": REDIRECT_URI,
     "scope": SCOPE,
-    "client_id": CLIENT_ID,
+    "client_id": client["id"],
 }
 
 url_args = "&".join(
@@ -78,6 +76,8 @@ API_ENDPOINTS = dict(
         ("new_releases", "{}/{}/{}".format(SPOTIFY_API_URL, "browse", "new-releases")),
         # https://api.spotify.com/v1/albums/{id}
         ("album", "{}/{}/".format(SPOTIFY_API_URL, "albums")),
+        # https://api.spotify.com/v1/tracks/{id}
+        ("track", "{}/{}/".format(SPOTIFY_API_URL, "tracks")),
         # https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}
         (
             "spotify_playlists",

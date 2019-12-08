@@ -3,7 +3,7 @@
 {% block content %}
     <div style="width: 60%; margin: auto">
     {% for recently in recently_played %}
-            <a href="{% url 'track' track_id=recently.track.id track_artist=recently.track.artists.0.name track_name=recently.track.name %}" class="list-group-item list-group-item-action">
+            <a href="{% url 'track' track_id=recently.track.id %}" class="list-group-item list-group-item-action">
                 {{ recently.track.artists.0.name }} - &ensp; {{ recently.track.name }}
             </a><br>
     {% endfor %}

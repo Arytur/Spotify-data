@@ -23,7 +23,7 @@ class Index(View):
         spotify = SpotifyRequest(request)
         new_releases = spotify.get_new_releases()
 
-        return render(request, "main.html", {"new_releases": new_releases})
+        return render(request, "index.html", {"new_releases": new_releases})
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -31,7 +31,7 @@ class UserRecentlyPlayedView(View):
     def get(self, request):
 
         spotify = SpotifyRequest(request)
-        recently_played = spotify.get_users_recently_played()
+        recently_played = spotify.get_user_recently_played()
         return render(
             request, "recently_played.html", {"recently_played": recently_played}
         )
@@ -39,18 +39,25 @@ class UserRecentlyPlayedView(View):
 
 @method_decorator(token_validation, name="dispatch")
 class TrackDetailView(View):
-    def get(self, request, track_id, track_artist, track_name):
+    def get(self, request, track_id):
 
         try:
+            # TODO: Omg, change it...
             track = Track.objects.get(id=track_id)
+            track_features = track.trackfeatures_set.first()
+            features = track_features.features
+            chart_numbers = features.get_features_for_chart
         except Track.DoesNotExist:
             # TODO: move creating it to another file
             spotify = SpotifyRequest(request)
+            track_data = spotify.get_track(track_id)
 
+            # TODO: add Artist for a given track
             artist, _ = Artist.objects.get_or_create(
-                name=album_data["artists"][0]["name"]
+                name=track_data["artists"][0]["name"]
             )
-            track = Track.objects.create(id=track_id, artist=artist, name=track_name,)
+            track_name = track_data["name"]
+            track = Track.objects.create(id=track_id, artist=artist, name=track_name)
 
             features = spotify.get_track_audio_features(track_id)
             features = Features.objects.create(

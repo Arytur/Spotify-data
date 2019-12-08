@@ -18,7 +18,7 @@ class SpotifyRequest:
         resp = requests.get(url, headers=self.authorization_header)
         return resp.json()
 
-    def get_users_recently_played(self):
+    def get_user_recently_played(self):
         url = API_ENDPOINTS["user_recently_played"]
         resp = self._requests_url(url)
         return resp["items"]
@@ -30,6 +30,11 @@ class SpotifyRequest:
 
     def get_album(self, album_id):
         url = API_ENDPOINTS["album"] + album_id
+        resp = self._requests_url(url)
+        return resp
+
+    def get_track(self, track_id):
+        url = API_ENDPOINTS["track"] + track_id
         resp = self._requests_url(url)
         return resp
 
