@@ -1,6 +1,8 @@
 # Spotify-data
 Django project based on Spotify API. 
 
+Work in progress - some part of the app does not work.
+
 ![Image](https://github.com/Arytur/Spotify-data/blob/master/spot1.png?raw=true)
 
 With this application it is possible to requests data from Spotify such as:
