@@ -13,22 +13,45 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf import settings
 from django.contrib import admin
-from spotify_app.views import *
+from django.urls import include, path, re_path
+
+from spotify_app.views import (
+    Index,
+    Callback,
+    UserRecentlyPlayedView,
+    AlbumView,
+    SpotifyPlaylistsView,
+    PlaylistView,
+    TrackAudioFeaturesView,
+    TracksTableView,
+    AlbumTableView,
+    SearchView,
+    ArtistView
+) 
+
+# TODO: include for the app urls
+# TODO: fix track url, leave only id and change it to slug
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^$', Index.as_view(), name='index'),
-    url(r'^callback/q', Callback.as_view(), name='callback'),
-    url(r'^recently_played/$', UserRecentlyPlayedView.as_view(), name='recently_played'),
-    url(r'^album/(?P<album_id>[a-zA-Z0-9]+)', AlbumView.as_view(), name='album'),
-    url(r'^spotify_playlists/$', SpotifyPlaylistsView.as_view(), name='spotify_playlists'),
-    url(r'^playlist/(?P<playlist_id>[a-zA-Z0-9]+)/', PlaylistView.as_view(), name='playlist'),
-    url(r'^track/(?P<track_id>[a-zA-Z0-9]+)/(?P<track_artist>.*)/(?P<track_name>.*)/',
+    path('admin/', admin.site.urls),
+    path('', Index.as_view(), name='index'),
+    path('callback/q', Callback.as_view(), name='callback'),
+    path('recently_played/', UserRecentlyPlayedView.as_view(), name='recently_played'),
+    path('album/<slug:album_id>/', AlbumView.as_view(), name='album'),
+    path('spotify_playlists/', SpotifyPlaylistsView.as_view(), name='spotify_playlists'),
+    path('playlist/<slug:playlist_id>/', PlaylistView.as_view(), name='playlist'),
+    re_path('^track/(?P<track_id>[a-zA-Z0-9]+)/(?P<track_artist>.*)/(?P<track_name>.*)/$',
         TrackAudioFeaturesView.as_view(), name='track'),
-    url(r'tracks_table', TracksTableView.as_view(), name='tracks_table'),
-    url(r'albums_table', AlbumTableView.as_view(), name='albums_table'),
-    url(r'search', SearchView.as_view(), name='search'),
-    url(r'^artist/(?P<artist_id>.*)/$', ArtistView.as_view(), name='artist')
+    path('tracks_table/', TracksTableView.as_view(), name='tracks_table'),
+    path('albums_table/', AlbumTableView.as_view(), name='albums_table'),
+    path('search/', SearchView.as_view(), name='search'),
+    path('artist/<slug:artist_id>/', ArtistView.as_view(), name='artist')
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

@@ -3,7 +3,7 @@ from django.db import models
 
 class Artist(models.Model):
     """
-    Model for the single artist.
+    Model for single artist.
     """
 
     name = models.CharField(max_length=128)
@@ -11,7 +11,7 @@ class Artist(models.Model):
 
 class Track(models.Model):
     """
-    Model for the single track.
+    Model for single track.
     """
 
     id = models.CharField(max_length=32, primary_key=True, unique=True)
@@ -24,7 +24,7 @@ class Track(models.Model):
 
 class Album(models.Model):
     """
-    Model for the single album.
+    Model for single album.
     """
 
     id = models.CharField(max_length=32, primary_key=True, unique=True)
