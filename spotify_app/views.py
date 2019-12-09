@@ -65,6 +65,7 @@ class TrackDetailView(View):
             track_name = track_data["name"]
             track = Track.objects.create(id=track_id, artist=artist, name=track_name)
 
+        except TrackFeatures.DoesNotExist:
             features = get_track_audio_features(request, track_id)
             features = Features.objects.create(
                 danceability=features["danceability"],
@@ -91,7 +92,9 @@ class TracksTableView(View):
         tracks = Track.objects.all()[:10]
         tracks_features = TrackFeatures.objects.filter(track__in=tracks)
 
-        return render(request, "tracks_table.html", {"tracks_features": tracks_features})
+        return render(
+            request, "tracks_table.html", {"tracks_features": tracks_features}
+        )
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -112,13 +115,17 @@ class AlbumDetailView(View):
             artist, _ = Artist.objects.get_or_create(
                 id=album_data["artists"][0]["id"], name=album_data["artists"][0]["name"]
             )
-            tracks = album_data["tracks"]["items"]
             album = Album.objects.create(
                 id=album_id,
                 name=album_data["name"],
                 artist=artist,
                 image=album_data["images"][1]["url"],
             )
+            for track in album_data["tracks"]["items"]:
+                track, _ = Track.objects.get_or_create(
+                    id=track["id"], name=track["name"], artist=artist
+                )
+                album.tracks.add(track)
 
             # TODO: calculate features for album.
             # try:
@@ -144,7 +151,7 @@ class AlbumDetailView(View):
 
         ctx = {
             "album": album,
-            "tracks": tracks,
+            "tracks": album.tracks.all(),
             # "album_avg": album.get_features_for_chart(),
         }
         return render(request, "album.html", ctx)
