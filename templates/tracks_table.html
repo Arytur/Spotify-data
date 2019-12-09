@@ -25,17 +25,17 @@
             </tr>
         </thead>
         <tbody>
-        {% for track in tracks %}
+        {% for track in tracks_features %}
         <tr>
             <td scope="row">{{ track.id }}</td>
-            <td>{{ track }}</td>
-            <td>{{ track.danceability }}</td>
-            <td>{{ track.speechiness }}</td>
-            <td>{{ track.acousticness }}</td>
-            <td>{{ track.valence }}</td>
-            <td>{{ track.instrumentalness }}</td>
-            <td>{{ track.energy }}</td>
-            <td>{{ track.liveness }}</td>
+            <td>{{ track.track.name }}</td>
+            <td>{{ track.features.danceability }}</td>
+            <td>{{ track.features.speechiness }}</td>
+            <td>{{ track.features.acousticness }}</td>
+            <td>{{ track.features.valence }}</td>
+            <td>{{ track.features.instrumentalness }}</td>
+            <td>{{ track.features.energy }}</td>
+            <td>{{ track.features.liveness }}</td>
 
         </tr>
         {% endfor %}

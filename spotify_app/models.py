@@ -6,6 +6,7 @@ class Artist(models.Model):
     Model for single artist.
     """
 
+    id = models.CharField(max_length=32, primary_key=True, unique=True)
     name = models.CharField(max_length=128)
 
 
@@ -29,8 +30,10 @@ class Album(models.Model):
 
     id = models.CharField(max_length=32, primary_key=True, unique=True)
     name = models.CharField(max_length=128)
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     image = models.URLField(null=True)
+
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+    tracks = models.ManyToManyField(Track)
 
     def __str__(self):
         return f"{self.name} - {self.artist.name}"

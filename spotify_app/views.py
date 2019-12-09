@@ -12,13 +12,13 @@ from .models import Album, Artist, Features, Track, TrackFeatures
 from .tasks import (
     get_new_releases,
     get_user_recently_played,
+    get_album,
     get_track,
     get_track_audio_features,
-    get_album,
-    artist_albums,
     get_spotify_playlists,
     get_playlist_tracks,
-    search_result,
+    get_search_results,
+    get_artist_albums,
 )
 
 
@@ -60,7 +60,7 @@ class TrackDetailView(View):
             track_data = get_track(request, track_id)
 
             artist, _ = Artist.objects.get_or_create(
-                name=track_data["artists"][0]["name"]
+                id=track_data["artists"][0]["id"], name=track_data["artists"][0]["name"]
             )
             track_name = track_data["name"]
             track = Track.objects.create(id=track_id, artist=artist, name=track_name)
@@ -88,8 +88,10 @@ class TracksTableView(View):
     """
 
     def get(self, request):
-        tracks = Track.objects.all()
-        return render(request, "tracks_table.html", {"tracks": tracks})
+        tracks = Track.objects.all()[:10]
+        tracks_features = TrackFeatures.objects.filter(track__in=tracks)
+
+        return render(request, "tracks_table.html", {"tracks_features": tracks_features})
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -108,16 +110,15 @@ class AlbumDetailView(View):
         except Album.DoesNotExist:
             album_data = get_album(request, album_id)
             artist, _ = Artist.objects.get_or_create(
-                name=album_data["artists"][0]["name"]
+                id=album_data["artists"][0]["id"], name=album_data["artists"][0]["name"]
             )
+            tracks = album_data["tracks"]["items"]
             album = Album.objects.create(
                 id=album_id,
                 name=album_data["name"],
                 artist=artist,
                 image=album_data["images"][1]["url"],
             )
-
-            tracks = album_data["tracks"]["items"]
 
             # TODO: calculate features for album.
             # try:
@@ -143,7 +144,7 @@ class AlbumDetailView(View):
 
         ctx = {
             "album": album,
-            # "tracks": tracks,
+            "tracks": tracks,
             # "album_avg": album.get_features_for_chart(),
         }
         return render(request, "album.html", ctx)
@@ -159,7 +160,7 @@ class AlbumTableView(View):
 class ArtistDetailView(View):
     def get(self, request, artist_id):
 
-        artist = artist_albums(request, artist_id)
+        artist = get_artist_albums(request)
         return render(request, "artist.html", {"artist": artist})
 
 
@@ -188,7 +189,7 @@ class SearchView(View):
     def get(self, request):
 
         searching = request.GET.get("q")
-        result = search_result(request, searching)
+        result = search_result(request)
         result_list = result["artists"]
         return render(request, "search.html", {"result_list": result_list})
 

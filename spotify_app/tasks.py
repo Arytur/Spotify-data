@@ -3,12 +3,6 @@ import requests
 from .api_endpoints import API_ENDPOINTS, PLAYLISTS_URI
 
 
-# TODO: is this func used somewhere else?
-# if not, delete it
-def get_access_token(request):
-    return request.session.get("access_token")
-
-
 def requests_url(request, url):
     access_token = request.session.get("access_token")
     authorization_header = {"Authorization": "Bearer {}".format(access_token)}
@@ -67,11 +61,11 @@ def get_track_audio_features(request, track_id):
     return requests_url(request, url)
 
 
-def search_result(request, searching):
+def get_search_results(request, searching):
     url = API_ENDPOINTS["search"][0] + searching + API_ENDPOINTS["search"][1]
     return requests_url(request, url)
 
 
-def artist_albums(request, artist):
+def get_artist_albums(request, artist):
     url = API_ENDPOINTS["artist_albums"][0] + artist + API_ENDPOINTS["artist_albums"][1]
     return requests_url(request, url)
