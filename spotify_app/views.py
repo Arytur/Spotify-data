@@ -167,7 +167,7 @@ class AlbumTableView(View):
 class ArtistDetailView(View):
     def get(self, request, artist_id):
 
-        artist = get_artist_albums(request)
+        artist = get_artist_albums(request, artist_id)
         return render(request, "artist.html", {"artist": artist})
 
 
@@ -175,8 +175,8 @@ class ArtistDetailView(View):
 class SpotifyPlaylistsView(View):
     def get(self, request):
 
-        ctx = get_spotify_playlists(request)
-        return render(request, "spotify_playlists.html", ctx)
+        playlists = get_spotify_playlists(request)
+        return render(request, "spotify_playlists.html", playlists)
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -184,11 +184,8 @@ class PlaylistDetailView(View):
     def get(self, request, playlist_id):
 
         playlist_tracks = get_playlist_tracks(request, playlist_id)
-        feature_track = [track["track"]["id"] for track in playlist_tracks["items"]]
 
-        ctx = {"playlist_tracks": playlist_tracks}
-
-        return render(request, "playlist.html", ctx)
+        return render(request, {"playlist_tracks": playlist_tracks})
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -196,7 +193,7 @@ class SearchView(View):
     def get(self, request):
 
         searching = request.GET.get("q")
-        result = search_result(request)
+        result = search_result(request, searching)
         result_list = result["artists"]
         return render(request, "search.html", {"result_list": result_list})
 

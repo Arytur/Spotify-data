@@ -1,7 +1,9 @@
+import logging
 import requests
 
 from .api_endpoints import API_ENDPOINTS, PLAYLISTS_URI
 
+LOG = logging.getLogger(__name__)
 
 def requests_url(request, url):
     access_token = request.session.get("access_token")
@@ -34,6 +36,7 @@ def get_track(request, track_id):
 
 def get_spotify_playlists(request):
 
+    # TODO: make it work or remove it
     playlists_resp = {}
     for k, v in PLAYLISTS_URI.items():
         url = (
