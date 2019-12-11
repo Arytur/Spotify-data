@@ -50,11 +50,8 @@ class TrackDetailView(View):
     def get(self, request, track_id):
 
         try:
-            # TODO: coould be better?
+            # TODO: could be better?
             track = Track.objects.get(id=track_id)
-            track_features = track.trackfeatures_set.get()
-            features = track_features.features
-            chart_numbers = features.get_features_for_chart
         except Track.DoesNotExist:
             # TODO: move creating it to another file
             track_data = get_track(request, track_id)
@@ -65,7 +62,6 @@ class TrackDetailView(View):
             track_name = track_data["name"]
             track = Track.objects.create(id=track_id, artist=artist, name=track_name)
 
-        except TrackFeatures.DoesNotExist:
             features = get_track_audio_features(request, track_id)
             features = Features.objects.create(
                 danceability=features["danceability"],
@@ -76,8 +72,10 @@ class TrackDetailView(View):
                 energy=features["energy"],
                 liveness=features["liveness"],
             )
-            track_feature = TrackFeatures.objects.create(track=track, features=features)
-            chart_numbers = features.get_features_for_chart
+            TrackFeatures.objects.create(track=track, features=features)
+        track_features = track.trackfeatures_set.get()
+        features = track_features.features
+        chart_numbers = features.get_features_for_chart
 
         ctx = {"track": track, "features": features, "chart": chart_numbers}
         return render(request, "track.html", ctx)
@@ -193,7 +191,7 @@ class SearchView(View):
     def get(self, request):
 
         searching = request.GET.get("q")
-        result = search_result(request, searching)
+        result = get_search_results(request, searching)
         result_list = result["artists"]
         return render(request, "search.html", {"result_list": result_list})
 

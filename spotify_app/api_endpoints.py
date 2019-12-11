@@ -1,18 +1,24 @@
-import json
-import base64
-import requests
-import os
-
-from spotify_project.settings import BASE_DIR
-
 # Authentication Steps, paramaters, and responses are defined at
 # https://developer.spotify.com/web-api/authorization-guide/
 # Visit this url to see all the steps, parameters, and expected response.
+import base64
+import json
+import os
 
-#  Client Keys
+from django.core.exceptions import ImproperlyConfigured
+
+from spotify_project.settings import BASE_DIR
+
+
+# API Credentials
 mykeys_file = os.path.join(BASE_DIR, "mykeys.json")
-client = json.load(open(mykeys_file, "r+"))
-BASE64 = base64.b64encode(bytes(client["id"] + ":" + client["secret"], "ascii"))
+load_keys = json.load(open(mykeys_file, "r+"))
+client_id, client_secret = load_keys['id'], load_keys['secret']
+if client_id == 'your_key' or client_secret == 'your_secret':
+    error_msg = 'Set API credentials in mykeys.json'
+    raise ImproperlyConfigured(error_msg)
+
+BASE64 = base64.b64encode(bytes(client_id + ":" + client_secret, "ascii"))
 BASE64 = BASE64.decode("ascii")
 
 # Spotify URLS
@@ -35,13 +41,14 @@ auth_query_parameters = {
     "response_type": "code",
     "redirect_uri": REDIRECT_URI,
     "scope": SCOPE,
-    "client_id": client["id"],
+    "client_id": client_id,
 }
 
 url_args = "&".join(
     ["{}={}".format(key, val) for key, val in auth_query_parameters.items()]
 )
 auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
+
 
 # Context to use in authorizations/callback
 def user_context(request):

@@ -5,6 +5,7 @@ from .api_endpoints import API_ENDPOINTS, PLAYLISTS_URI
 
 LOG = logging.getLogger(__name__)
 
+
 def requests_url(request, url):
     access_token = request.session.get("access_token")
     authorization_header = {"Authorization": "Bearer {}".format(access_token)}

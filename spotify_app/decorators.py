@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 
+
 def token_validation(function):
     def wrap(request, *args, **kwargs):
         if 'access_token' not in request.session:
