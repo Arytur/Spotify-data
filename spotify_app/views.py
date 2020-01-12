@@ -8,8 +8,9 @@ from django.views import View
 
 from .api_endpoints import REDIRECT_URI, BASE64, SPOTIFY_TOKEN_URL
 from .decorators import token_validation
-from .models import Album, Artist, Features, Track, TrackFeatures
+from .models import Album, Artist, Track, TrackFeatures
 from .tasks import (
+    calculate_album_features,
     get_new_releases,
     get_user_recently_played,
     get_album,
@@ -29,16 +30,13 @@ class Index(View):
     """
 
     def get(self, request):
-
         new_releases = get_new_releases(request)
-
         return render(request, "index.html", {"new_releases": new_releases})
 
 
 @method_decorator(token_validation, name="dispatch")
 class UserRecentlyPlayedView(View):
     def get(self, request):
-
         recently_played = get_user_recently_played(request)
         return render(
             request, "recently_played.html", {"recently_played": recently_played}
@@ -50,31 +48,13 @@ class TrackDetailView(View):
     def get(self, request, track_id):
 
         try:
-            # TODO: could be better?
             track = Track.objects.get(id=track_id)
+            track_features = track.trackfeatures_set.get()
+            features = track_features.features
         except Track.DoesNotExist:
-            # TODO: move creating it to another file
-            track_data = get_track(request, track_id)
+            track = get_track(request, track_id)
+            features = get_track_audio_features(request, track)
 
-            artist, _ = Artist.objects.get_or_create(
-                id=track_data["artists"][0]["id"], name=track_data["artists"][0]["name"]
-            )
-            track_name = track_data["name"]
-            track = Track.objects.create(id=track_id, artist=artist, name=track_name)
-
-            features = get_track_audio_features(request, track_id)
-            features = Features.objects.create(
-                danceability=features["danceability"],
-                speechiness=features["speechiness"],
-                acousticness=features["acousticness"],
-                valence=features["valence"],
-                instrumentalness=features["instrumentalness"],
-                energy=features["energy"],
-                liveness=features["liveness"],
-            )
-            TrackFeatures.objects.create(track=track, features=features)
-        track_features = track.trackfeatures_set.get()
-        features = track_features.features
         chart_numbers = features.get_features_for_chart
 
         ctx = {"track": track, "features": features, "chart": chart_numbers}
@@ -104,10 +84,10 @@ class AlbumDetailView(View):
 
     def get(self, request, album_id):
 
-        # TODO: save all track from this album
-
         try:
             album = Album.objects.get(id=album_id)
+            features = album.albumfeatures_set.get()
+            album_features = features.features
         except Album.DoesNotExist:
             album_data = get_album(request, album_id)
             artist, _ = Artist.objects.get_or_create(
@@ -119,38 +99,23 @@ class AlbumDetailView(View):
                 artist=artist,
                 image=album_data["images"][1]["url"],
             )
-            for track in album_data["tracks"]["items"]:
+            tracks_features_list = []
+            for item in album_data["tracks"]["items"]:
                 track, _ = Track.objects.get_or_create(
-                    id=track["id"], name=track["name"], artist=artist
+                    id=item["id"], name=item["name"], artist=artist
                 )
                 album.tracks.add(track)
+                track_features = get_track_audio_features(request, track)
+                tracks_features_list.append(track_features)
 
             # TODO: calculate features for album.
-            # try:
-            #     tracks = album_data["tracks"]["items"]
-            #     album_features = Album.calculate_album_features(spotify, tracks)
-            # except KeyError:
-            #     ctx = {"album": album_data, "tracks": tracks}
-            #     return render(request, "album.html", ctx)
 
-            # features = Features.objects.create(
-            #     danceability=album_features["danceability"],
-            #     speechiness=album_features["speechiness"],
-            #     acousticness=album_features["acousticness"],
-            #     valence=album_features["valence"],
-            #     instrumentalness=album_features["instrumentalness"],
-            #     energy=album_features["energy"],
-            #     liveness=album_features["liveness"],
-            # )
-            # AlbumFeatures.objects.create(
-            #         album=album,
-            #         features=features
-            # )
+            album_features = calculate_album_features(tracks_features_list, album)
 
         ctx = {
             "album": album,
             "tracks": album.tracks.all(),
-            # "album_avg": album.get_features_for_chart(),
+            "album_avg": album_features.get_features_for_chart(),
         }
         return render(request, "album.html", ctx)
 
@@ -164,7 +129,6 @@ class AlbumTableView(View):
 @method_decorator(token_validation, name="dispatch")
 class ArtistDetailView(View):
     def get(self, request, artist_id):
-
         artist = get_artist_albums(request, artist_id)
         return render(request, "artist.html", {"artist": artist})
 
@@ -172,7 +136,6 @@ class ArtistDetailView(View):
 @method_decorator(token_validation, name="dispatch")
 class SpotifyPlaylistsView(View):
     def get(self, request):
-
         playlists = get_spotify_playlists(request)
         return render(request, "spotify_playlists.html", playlists)
 
@@ -180,16 +143,13 @@ class SpotifyPlaylistsView(View):
 @method_decorator(token_validation, name="dispatch")
 class PlaylistDetailView(View):
     def get(self, request, playlist_id):
-
         playlist_tracks = get_playlist_tracks(request, playlist_id)
-
         return render(request, {"playlist_tracks": playlist_tracks})
 
 
 @method_decorator(token_validation, name="dispatch")
 class SearchView(View):
     def get(self, request):
-
         searching = request.GET.get("q")
         result = get_search_results(request, searching)
         result_list = result["artists"]
