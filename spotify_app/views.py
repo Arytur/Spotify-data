@@ -8,14 +8,12 @@ from django.views import View
 
 from .api_endpoints import REDIRECT_URI, BASE64, SPOTIFY_TOKEN_URL
 from .decorators import token_validation
-from .models import Album, Artist, Track, TrackFeatures
+from .models import Album, Track, TrackFeatures
 from .tasks import (
-    calculate_album_features,
+    create_new_album,
+    create_track_and_features,
     get_new_releases,
     get_user_recently_played,
-    get_album,
-    get_track,
-    get_track_audio_features,
     get_spotify_playlists,
     get_playlist_tracks,
     get_search_results,
@@ -49,11 +47,11 @@ class TrackDetailView(View):
 
         try:
             track = Track.objects.get(id=track_id)
-            track_features = track.trackfeatures_set.get()
-            features = track_features.features
         except Track.DoesNotExist:
-            track = get_track(request, track_id)
-            features = get_track_audio_features(request, track)
+            track = create_track_and_features(request, track_id)
+
+        track_features = track.trackfeatures_set.get()
+        features = track_features.features
 
         chart_numbers = features.get_features_for_chart
 
@@ -86,36 +84,15 @@ class AlbumDetailView(View):
 
         try:
             album = Album.objects.get(id=album_id)
-            features = album.albumfeatures_set.get()
-            album_features = features.features
+            album_features = album.albumfeatures_set.get()
+            features = album_features.features
         except Album.DoesNotExist:
-            album_data = get_album(request, album_id)
-            artist, _ = Artist.objects.get_or_create(
-                id=album_data["artists"][0]["id"], name=album_data["artists"][0]["name"]
-            )
-            album = Album.objects.create(
-                id=album_id,
-                name=album_data["name"],
-                artist=artist,
-                image=album_data["images"][1]["url"],
-            )
-            tracks_features_list = []
-            for item in album_data["tracks"]["items"]:
-                track, _ = Track.objects.get_or_create(
-                    id=item["id"], name=item["name"], artist=artist
-                )
-                album.tracks.add(track)
-                track_features = get_track_audio_features(request, track)
-                tracks_features_list.append(track_features)
-
-            # TODO: calculate features for album.
-
-            album_features = calculate_album_features(tracks_features_list, album)
+            album, features = create_new_album(request, album_id)
 
         ctx = {
             "album": album,
             "tracks": album.tracks.all(),
-            "album_avg": album_features.get_features_for_chart(),
+            "album_avg": features.get_features_for_chart(),
         }
         return render(request, "album.html", ctx)
 

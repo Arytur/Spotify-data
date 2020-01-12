@@ -2,7 +2,7 @@ import logging
 import requests
 
 from .api_endpoints import API_ENDPOINTS, PLAYLISTS_URI
-from .models import AlbumFeatures, Artist, Features, Track, TrackFeatures
+from .models import Album, AlbumFeatures, Artist, Features, Track, TrackFeatures
 
 LOG = logging.getLogger(__name__)
 
@@ -31,19 +31,9 @@ def get_album(request, album_id):
     return requests_url(request, url)
 
 
-def request_track(request, track_id):
+def get_track(request, track_id):
     url = API_ENDPOINTS["track"] + track_id
     return requests_url(request, url)
-
-
-def get_track(request, track_id):
-    track_data = request_track(request, track_id)
-    artist, _ = Artist.objects.get_or_create(
-        id=track_data["artists"][0]["id"], name=track_data["artists"][0]["name"]
-    )
-    track_name = track_data["name"]
-    track = Track.objects.create(id=track_id, artist=artist, name=track_name)
-    return track
 
 
 def get_spotify_playlists(request):
@@ -71,13 +61,23 @@ def get_playlist_tracks(request, playlist_id):
     return requests_url(request, url)
 
 
-def request_track_audio_features(request, track_id):
+def get_track_audio_features(request, track_id):
     url = API_ENDPOINTS["track_audio_feature"] + track_id
     return requests_url(request, url)
 
 
-def get_track_audio_features(request, track):
-    features = request_track_audio_features(request, track.id)
+def create_track(request, track_id):
+    track_data = get_track(request, track_id)
+    artist, _ = Artist.objects.get_or_create(
+        id=track_data["artists"][0]["id"], name=track_data["artists"][0]["name"]
+    )
+    track_name = track_data["name"]
+    track = Track.objects.create(id=track_id, artist=artist, name=track_name)
+    return track
+
+
+def create_track_audio_features(request, track):
+    features = get_track_audio_features(request, track.id)
     track_features = Features.objects.create(
         danceability=features["danceability"],
         speechiness=features["speechiness"],
@@ -89,6 +89,13 @@ def get_track_audio_features(request, track):
     )
     TrackFeatures.objects.create(track=track, features=track_features)
     return track_features
+
+
+def create_track_and_features(request, track_id):
+
+    track = create_track(request, track_id)
+    create_track_audio_features(request, track)
+    return track
 
 
 def calculate_album_features(tracks, album):
@@ -122,6 +129,31 @@ def calculate_album_features(tracks, album):
     )
     AlbumFeatures.objects.create(album=album, features=album_features)
     return album_features
+
+
+def create_new_album(request, album_id):
+
+    album_data = get_album(request, album_id)
+    artist, _ = Artist.objects.get_or_create(
+        id=album_data["artists"][0]["id"], name=album_data["artists"][0]["name"]
+    )
+    album = Album.objects.create(
+        id=album_id,
+        name=album_data["name"],
+        artist=artist,
+        image=album_data["images"][1]["url"],
+    )
+    tracks_features_list = []
+    for item in album_data["tracks"]["items"]:
+        track, _ = Track.objects.get_or_create(
+            id=item["id"], name=item["name"], artist=artist
+        )
+        album.tracks.add(track)
+        track_features = create_track_audio_features(request, track)
+        tracks_features_list.append(track_features)
+
+    album_features = calculate_album_features(tracks_features_list, album)
+    return album, album_features
 
 
 def get_search_results(request, searching):
