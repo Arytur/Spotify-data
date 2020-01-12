@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h3 style="text-align: center; font-weight: bolder">Znaleziono {{ result_list.total }} wyniki</h3><hr>
+    <h3 style="text-align: center; font-weight: bolder">{{ result_list.total }} results found.</h3><hr>
 
 {% for result in result_list.items %}
     <div style="width: 70%; margin: auto">

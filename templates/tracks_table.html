@@ -14,6 +14,7 @@
         <thead>
             <tr style="font-size: large">
                 <th scope="col">#</th>
+                <th>Artist</th>
                 <th>Track</th>
                 <th>Danceability</th>
                 <th>Speechiness</th>
@@ -28,6 +29,7 @@
         {% for track in tracks_features %}
         <tr>
             <td scope="row">{{ track.id }}</td>
+            <td>{{ track.track.artist.name }}</td>
             <td>{{ track.track.name }}</td>
             <td>{{ track.features.danceability }}</td>
             <td>{{ track.features.speechiness }}</td>

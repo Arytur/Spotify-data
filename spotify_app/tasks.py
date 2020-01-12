@@ -14,6 +14,8 @@ def requests_url(request, url):
     return resp.json()
 
 
+# GET
+
 def get_new_releases(request):
     url = API_ENDPOINTS["new_releases"]
     results = requests_url(request, url)
@@ -66,6 +68,19 @@ def get_track_audio_features(request, track_id):
     return requests_url(request, url)
 
 
+def get_search_results(request, searching):
+    url = API_ENDPOINTS["search"][0] + searching + API_ENDPOINTS["search"][1]
+    return requests_url(request, url)
+
+
+def get_artist_albums(request, artist):
+    url = API_ENDPOINTS["artist_albums"][0] + artist + API_ENDPOINTS["artist_albums"][1]
+    return requests_url(request, url)
+
+
+# CREATE
+
+
 def create_track(request, track_id):
     track_data = get_track(request, track_id)
     artist, _ = Artist.objects.get_or_create(
@@ -98,7 +113,7 @@ def create_track_and_features(request, track_id):
     return track
 
 
-def calculate_album_features(tracks, album):
+def create_album_features(tracks, album):
     dict_of_features = {
         "danceability": [],
         "speechiness": [],
@@ -131,7 +146,7 @@ def calculate_album_features(tracks, album):
     return album_features
 
 
-def create_new_album(request, album_id):
+def create_album_and_features(request, album_id):
 
     album_data = get_album(request, album_id)
     artist, _ = Artist.objects.get_or_create(
@@ -152,15 +167,5 @@ def create_new_album(request, album_id):
         track_features = create_track_audio_features(request, track)
         tracks_features_list.append(track_features)
 
-    album_features = calculate_album_features(tracks_features_list, album)
-    return album, album_features
-
-
-def get_search_results(request, searching):
-    url = API_ENDPOINTS["search"][0] + searching + API_ENDPOINTS["search"][1]
-    return requests_url(request, url)
-
-
-def get_artist_albums(request, artist):
-    url = API_ENDPOINTS["artist_albums"][0] + artist + API_ENDPOINTS["artist_albums"][1]
-    return requests_url(request, url)
+    create_album_features(tracks_features_list, album)
+    return album

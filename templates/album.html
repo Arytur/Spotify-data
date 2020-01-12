@@ -13,13 +13,13 @@
 {% block content %}
 
     <br>
-    <h3 style="border-bottom: 2px solid white; padding: 4px;"> {{ album.album_name }} - {{ album.album_artist }}</h3>
+    <h3 style="border-bottom: 2px solid white; padding: 4px;"> {{ album.artist.name }} - {{ album.name }}</h3>
     <img src="{{ album.album_image }}" style="float: right; margin-right: 40px">
     <br>
     <ul style="float: left; width: 50%">
     {% for track in tracks %}
         <a href="{% url 'track' track_id=track.id %}" class="list-group-item list-group-item-action">
-        <li>{{ track.track_number }}. {{ track.name }}</li>
+        <li>{{ forloop.counter }}. {{ track.name }}</li>
         </a><br>
     {% endfor %}
     </ul><hr><br>

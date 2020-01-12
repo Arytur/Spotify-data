@@ -8,9 +8,9 @@ from django.views import View
 
 from .api_endpoints import REDIRECT_URI, BASE64, SPOTIFY_TOKEN_URL
 from .decorators import token_validation
-from .models import Album, Track, TrackFeatures
+from .models import Album, AlbumFeatures, Track, TrackFeatures
 from .tasks import (
-    create_new_album,
+    create_album_and_features,
     create_track_and_features,
     get_new_releases,
     get_user_recently_played,
@@ -84,10 +84,11 @@ class AlbumDetailView(View):
 
         try:
             album = Album.objects.get(id=album_id)
-            album_features = album.albumfeatures_set.get()
-            features = album_features.features
         except Album.DoesNotExist:
-            album, features = create_new_album(request, album_id)
+            album = create_album_and_features(request, album_id)
+
+        album_features = album.albumfeatures_set.get()
+        features = album_features.features
 
         ctx = {
             "album": album,
@@ -99,8 +100,9 @@ class AlbumDetailView(View):
 
 class AlbumTableView(View):
     def get(self, request):
-        albums = Album.objects.all()
-        return render(request, "albums_table.html", {"albums": albums})
+        albums = Album.objects.all()[:10]
+        albums_features = AlbumFeatures.objects.filter(album__in=albums)
+        return render(request, "albums_table.html", {"albums_features": albums_features})
 
 
 @method_decorator(token_validation, name="dispatch")
