@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 import requests
 
@@ -114,21 +115,13 @@ def create_track_and_features(request, track_id):
 
 
 def create_album_features(tracks, album):
-    dict_of_features = {
-        "danceability": [],
-        "speechiness": [],
-        "acousticness": [],
-        "valence": [],
-        "instrumentalness": [],
-        "energy": [],
-        "liveness": [],
-    }
+    dict_of_features = defaultdict(list)
     tracks_number = len(tracks)
 
     for track in tracks:
-        tr_feat = track.get_features()
-        for num, key in enumerate(dict_of_features.keys()):
-            dict_of_features[key].append(tr_feat[num])
+        tr_feat = track.get_features
+        for key in tr_feat.keys():
+            dict_of_features[key].append(tr_feat[key])
 
     for key in dict_of_features.keys():
         dict_of_features[key] = sum(dict_of_features[key]) / tracks_number
@@ -160,6 +153,8 @@ def create_album_and_features(request, album_id):
     )
     tracks_features_list = []
     for item in album_data["tracks"]["items"]:
+        # TODO use create_track_and_features
+        # TODO bulk add all tracks to album
         track, _ = Track.objects.get_or_create(
             id=item["id"], name=item["name"], artist=artist
         )

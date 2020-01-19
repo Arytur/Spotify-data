@@ -52,43 +52,19 @@ class Features(models.Model):
     energy = models.DecimalField(max_digits=4, decimal_places=3)
     liveness = models.DecimalField(max_digits=4, decimal_places=3)
 
+    @property
+    def get_fields_names(self):
+        return [f.name for f in Features._meta.fields if f.name != 'id']
+
+    @property
     def get_features(self):
-        return [
-            self.danceability,
-            self.speechiness,
-            self.acousticness,
-            self.valence,
-            self.instrumentalness,
-            self.energy,
-            self.liveness,
-        ]
+        dict_of_features = {
+            f: getattr(self, f) for f in self.get_fields_names
+        }
+        return dict_of_features
 
     def get_features_for_chart(self):
-        features = self.get_features()
-        return [int(feat * 100) for feat in features]
-
-    @staticmethod
-    def calculate_album_features(spotify, tracks):
-        dict_of_features = {
-            "danceability": [],
-            "speechiness": [],
-            "acousticness": [],
-            "valence": [],
-            "instrumentalness": [],
-            "energy": [],
-            "liveness": [],
-        }
-        tracks_number = len(tracks)
-
-        for track in tracks:
-            track = spotify.get_track_audio_features(track["id"])
-            for key in dict_of_features.keys():
-                dict_of_features[key].append(track[key])
-
-        for key in dict_of_features.keys():
-            dict_of_features[key] = sum(dict_of_features[key]) / tracks_number
-
-        return dict_of_features
+        return [int(feat * 100) for feat in self.get_features.values()]
 
 
 class TrackFeatures(models.Model):
