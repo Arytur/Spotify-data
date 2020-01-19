@@ -116,7 +116,7 @@ class ArtistDetailView(View):
 class SpotifyPlaylistsView(View):
     def get(self, request):
         playlists = get_spotify_playlists(request)
-        return render(request, "spotify_playlists.html", playlists)
+        return render(request, "spotify_playlists.html", {'playlists': playlists})
 
 
 @method_decorator(token_validation, name="dispatch")
