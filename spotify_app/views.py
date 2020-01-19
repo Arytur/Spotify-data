@@ -123,7 +123,7 @@ class SpotifyPlaylistsView(View):
 class PlaylistDetailView(View):
     def get(self, request, playlist_id):
         playlist_tracks = get_playlist_tracks(request, playlist_id)
-        return render(request, {"playlist_tracks": playlist_tracks})
+        return render(request, "playlist.html", {"playlist_tracks": playlist_tracks})
 
 
 @method_decorator(token_validation, name="dispatch")

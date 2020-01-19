@@ -3,7 +3,7 @@
 {% block content %}
     <div style="margin: auto; width: 85%;"> 
         <div>
-        {% for name, playlist in playlists.items %}
+        {% for playlist in playlists.values %}
             <div class="card text-white bg-success mb-3" style="width: 18rem; display: inline-block; margin: 3%">
                 <a href="{% url 'playlist' playlist.id %}" class="btn btn-warning">
                 <img class="card-img-top" src="{{ playlist.images.0.url }}" alt="{{ playlist.description }}">
