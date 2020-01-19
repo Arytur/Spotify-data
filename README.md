@@ -1,7 +1,6 @@
 # Spotify-data
 Django project based on Spotify API. 
 
-Work in progress - some part of the app does not work.
 
 ![Image](https://github.com/Arytur/Spotify-data/blob/master/spot1.png?raw=true)
 
@@ -33,5 +32,3 @@ This project was created with use:
 The repository which helped me a lot:
 
 https://github.com/plamere/spotipy
-
-I couldn't use it directly with my project, because it was created in python 2 and flask, so some changes was needed.
