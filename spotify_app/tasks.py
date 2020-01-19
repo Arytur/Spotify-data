@@ -81,14 +81,17 @@ def get_artist_albums(request, artist):
 
 # CREATE
 
+def create_artist(resp):
+    artist, _ = Artist.objects.get_or_create(
+        id=resp["artists"][0]["id"], name=resp["artists"][0]["name"]
+    )
+    return artist
+
 
 def create_track(request, track_id):
     track_data = get_track(request, track_id)
-    artist, _ = Artist.objects.get_or_create(
-        id=track_data["artists"][0]["id"], name=track_data["artists"][0]["name"]
-    )
-    track_name = track_data["name"]
-    track = Track.objects.create(id=track_id, artist=artist, name=track_name)
+    artist = create_artist(track_data)
+    track = Track.objects.create(id=track_id, artist=artist, name=track_data["name"])
     return track
 
 
@@ -119,9 +122,10 @@ def create_album_features(tracks, album):
     tracks_number = len(tracks)
 
     for track in tracks:
-        tr_feat = track.get_features
-        for key in tr_feat.keys():
-            dict_of_features[key].append(tr_feat[key])
+        tr_feat = track.trackfeatures_set.get()
+        feat = tr_feat.features.get_features
+        for key in feat.keys():
+            dict_of_features[key].append(feat[key])
 
     for key in dict_of_features.keys():
         dict_of_features[key] = sum(dict_of_features[key]) / tracks_number
@@ -139,28 +143,30 @@ def create_album_features(tracks, album):
     return album_features
 
 
-def create_album_and_features(request, album_id):
+def create_tracks_from_album(request, album_data):
+
+    tracks_list = []
+    for item in album_data["tracks"]["items"]:
+        try:
+            track = Track.objects.get(id=item["id"])
+        except Track.DoesNotExist:
+            track = create_track_and_features(request, item["id"])
+        tracks_list.append(track)
+    return tracks_list
+
+
+def create_album_tracks_and_features(request, album_id):
 
     album_data = get_album(request, album_id)
-    artist, _ = Artist.objects.get_or_create(
-        id=album_data["artists"][0]["id"], name=album_data["artists"][0]["name"]
-    )
+    artist = create_artist(album_data)
     album = Album.objects.create(
         id=album_id,
         name=album_data["name"],
         artist=artist,
         image=album_data["images"][1]["url"],
     )
-    tracks_features_list = []
-    for item in album_data["tracks"]["items"]:
-        # TODO use create_track_and_features
-        # TODO bulk add all tracks to album
-        track, _ = Track.objects.get_or_create(
-            id=item["id"], name=item["name"], artist=artist
-        )
-        album.tracks.add(track)
-        track_features = create_track_audio_features(request, track)
-        tracks_features_list.append(track_features)
+    tracks_list = create_tracks_from_album(request, album_data)
+    album.tracks.add(*tracks_list)
 
-    create_album_features(tracks_features_list, album)
+    create_album_features(tracks_list, album)
     return album

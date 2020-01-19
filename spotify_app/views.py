@@ -10,7 +10,7 @@ from .api_endpoints import REDIRECT_URI, BASE64, SPOTIFY_TOKEN_URL
 from .decorators import token_validation
 from .models import Album, AlbumFeatures, Track, TrackFeatures
 from .tasks import (
-    create_album_and_features,
+    create_album_tracks_and_features,
     create_track_and_features,
     get_new_releases,
     get_user_recently_played,
@@ -85,7 +85,7 @@ class AlbumDetailView(View):
         try:
             album = Album.objects.get(id=album_id)
         except Album.DoesNotExist:
-            album = create_album_and_features(request, album_id)
+            album = create_album_tracks_and_features(request, album_id)
 
         album_features = album.albumfeatures_set.get()
         features = album_features.features
