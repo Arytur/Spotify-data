@@ -1,4 +1,4 @@
-Django==3.0
+Django==3.0.3
 django-debug-toolbar==2.1
 flake8==3.7.9
 psycopg2==2.8.4
