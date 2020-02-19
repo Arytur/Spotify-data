@@ -41,7 +41,6 @@ def get_track(request, track_id):
 
 def get_spotify_playlists(request):
 
-    # TODO: make it work or remove it
     playlists_resp = {}
     for k, v in PLAYLISTS_URI.items():
         url = (
