@@ -85,9 +85,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
 ]
 
 
@@ -124,11 +124,11 @@ logging.config.dictConfig(
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "console": {"format": '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',},
+            "console": {"format": '%(asctime)s %(name)-12s %(levelname)-8s %(message)s', },
         },
         "handlers": {
-            "console": {"class": "logging.StreamHandler", "formatter": "console",},
+            "console": {"class": "logging.StreamHandler", "formatter": "console", },
         },
-        "loggers": {'spotify_app': {"level": "DEBUG", "handlers": ["console"]},},
+        "loggers": {'spotify_app': {"level": "DEBUG", "handlers": ["console"]}, },
     }
 )
