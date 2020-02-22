@@ -23,7 +23,7 @@ class TestUrlsAndTemplatesUsed(TestCase):
 
     @patch('spotify_app.tasks.requests_url')
     def test_home_page(self, mock_func):
-        json_file = open('tests/fixtures/new_releases_raw.json')
+        json_file = open('spotify_app/tests/fixtures/new_releases_raw.json')
         resp_file = json.load(json_file)
         mock_func.return_value = resp_file
         self._add_access_token_to_client_session()
