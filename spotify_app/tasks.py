@@ -154,16 +154,21 @@ def create_tracks_from_album(request, album_data):
     return tracks_list
 
 
-def create_album_tracks_and_features(request, album_id):
-
+def create_album(request, album_id):
     album_data = get_album(request, album_id)
     artist = create_artist(album_data)
     album = Album.objects.create(
-        id=album_id,
+        id=album_data['id'],
         name=album_data["name"],
         artist=artist,
         image=album_data["images"][1]["url"],
     )
+    return album, album_data
+
+
+def create_album_tracks_and_features(request, album_id):
+
+    album, album_data = create_album(request, album_id)
     tracks_list = create_tracks_from_album(request, album_data)
     album.tracks.add(*tracks_list)
 
