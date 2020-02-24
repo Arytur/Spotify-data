@@ -1,0 +1,11 @@
+[run]
+omit = spotify_app/tests/*
+       spotify_app/migrations/*
+       spotify_app/apps.py
+       spotify_project/*
+       manage.py
+branch = True
+
+[report]
+show_missing = True
+skip_covered = True

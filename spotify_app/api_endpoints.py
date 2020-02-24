@@ -1,4 +1,4 @@
-# Authentication Steps, paramaters, and responses are defined at
+# Authentication Steps, parameters, and responses are defined at
 # https://developer.spotify.com/web-api/authorization-guide/
 # Visit this url to see all the steps, parameters, and expected response.
 import base64
@@ -8,14 +8,12 @@ import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from spotify_project.settings import BASE_DIR
-
 
 # API Credentials
-mykeys_file = os.path.join(BASE_DIR, "mykeys.json")
+mykeys_file = os.path.join(settings.BASE_DIR, "mykeys.json")
 load_keys = json.load(open(mykeys_file, "r+"))
 client_id, client_secret = load_keys['id'], load_keys['secret']
-if settings.SETTINGS_MODULE != 'spotify_project.test_settings':
+if settings.SETTINGS_MODULE != 'settings.test_settings':
     if client_id == 'your_key' or client_secret == 'your_secret':
         error_msg = 'Set API credentials in mykeys.json'
         raise ImproperlyConfigured(error_msg)
