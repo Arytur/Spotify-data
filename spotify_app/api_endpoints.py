@@ -15,7 +15,7 @@ from spotify_project.settings import BASE_DIR
 mykeys_file = os.path.join(BASE_DIR, "mykeys.json")
 load_keys = json.load(open(mykeys_file, "r+"))
 client_id, client_secret = load_keys['id'], load_keys['secret']
-if not settings.DEBUG:
+if settings.SETTINGS_MODULE != 'spotify_project.test_settings':
     if client_id == 'your_key' or client_secret == 'your_secret':
         error_msg = 'Set API credentials in mykeys.json'
         raise ImproperlyConfigured(error_msg)
