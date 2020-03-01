@@ -46,12 +46,57 @@ class TestUrlsAndTemplatesUsed(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'recently_played.html')
 
-    @patch('spotify_app.tasks.requests_url')
-    def test_tracks_table_page(self, mock_func):
+
+class TrackTableView(TestCase):
+
+    def setUp(self):
+        self.tracks_and_features = [
+            TrackFeaturesFactory()
+            for _ in range(10)
+        ]
+        self.tracks = [
+            x.track
+            for x in self.tracks_and_features
+        ]
+        self.features = [
+            x.features
+            for x in self.tracks_and_features
+        ]
+
         _add_access_token_to_client_session(self.client)
+
+    def test_url_and_template(self):
         response = self.client.get('/tracks_table/', follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'tracks_table.html')
+
+    def test_all_track_names_in_html(self):
+        response = self.client.get('/tracks_table/', follow=True)
+        for track in self.tracks:
+            self.assertContains(response, track.name)
+
+    def test_all_artist_names_in_html(self):
+        response = self.client.get('/tracks_table/', follow=True)
+        for track in self.tracks:
+            self.assertContains(response, track.artist.name)
+
+    def test_all_features_in_html(self):
+        features_names = Features().get_fields_names
+
+        response = self.client.get('/tracks_table/', follow=True)
+
+        for feat_name in features_names:
+            self.assertContains(response, feat_name.capitalize())
+
+    def test_all_features_values_in_html(self):
+        features_names = Features().get_fields_names
+
+        response = self.client.get('/tracks_table/', follow=True)
+
+        for feature in self.features:
+            for feat_name in features_names:
+                x_feat = getattr(feature, feat_name)
+                self.assertContains(response, x_feat)
 
 
 class AlbumTableView(TestCase):
