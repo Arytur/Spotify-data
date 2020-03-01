@@ -217,6 +217,21 @@ class TrackDetailView(TestCase):
         for numb in features_values:
             self.assertContains(response, numb)
 
+    @patch('spotify_app.views.create_track_and_features')
+    def test_create_track_when_does_not_exist(self, mock_create_track):
+        track_id = 'x233Ffs34kskzz'
+
+        self.client.get(f'/track/{track_id}/')
+
+        track = TrackFactory(id=track_id)
+        track_and_features = TrackFeaturesFactory(track=track)
+        mock_create_track.return_value = track_and_features
+
+        mock_create_track.assert_called_once()
+
+        response = self.client.get(f'/track/{track_id}/')
+        self.assertContains(response, track.name)
+
 
 class AlbumDetailView(TestCase):
 
@@ -279,3 +294,18 @@ class AlbumDetailView(TestCase):
 
         for numb in features_values:
             self.assertContains(response, numb)
+
+    @patch('spotify_app.views.create_album_tracks_and_features')
+    def test_create_album_when_does_not_exist(self, mock_create_album):
+        album_id = '123hkaCXX123kk'
+
+        self.client.get(f'/album/{album_id}/')
+
+        album = AlbumFactory(id=album_id)
+        album_and_features = AlbumFeaturesFactory(album=album)
+        mock_create_album.return_value = album_and_features
+
+        mock_create_album.assert_called_once()
+
+        response = self.client.get(f'/album/{album_id}/')
+        self.assertContains(response, album.name)
