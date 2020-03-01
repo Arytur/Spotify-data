@@ -5,3 +5,4 @@ psycopg2==2.8.4
 requests==2.22.0
 pytest-django
 pytest-cov
+factory_boy

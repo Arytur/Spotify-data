@@ -9,6 +9,9 @@ class Artist(models.Model):
     id = models.CharField(max_length=32, primary_key=True, unique=True)
     name = models.CharField(max_length=128)
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Track(models.Model):
     """

@@ -1,8 +1,7 @@
 import json
-
-from django.test import TestCase
 from unittest.mock import patch
 
+from django.test import TestCase
 
 class TestUrlsAndTemplatesUsed(TestCase):
 
@@ -18,8 +17,7 @@ class TestUrlsAndTemplatesUsed(TestCase):
 
     def test_redirect_from_home_page_to_callback(self):
         response = self.client.get('/')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/callback/q')
+        self.assertRedirects(response, '/callback/q')
 
     @patch('spotify_app.tasks.requests_url')
     def test_home_page(self, mock_func):
