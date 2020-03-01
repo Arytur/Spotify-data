@@ -13,7 +13,7 @@ class ArtistFactory(factory.django.DjangoModelFactory):
         model = models.Artist
 
     id = factory.fuzzy.FuzzyText(length=24, chars=CHAR_SET)
-    name = factory.Faker('name') 
+    name = factory.Faker('name')
 
 
 class TrackFactory(factory.django.DjangoModelFactory):
