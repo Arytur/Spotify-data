@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
+from spotify_app.models import Features
 from .factories import (
     AlbumFactory,
     AlbumFeaturesFactory,
@@ -52,12 +53,57 @@ class TestUrlsAndTemplatesUsed(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'tracks_table.html')
 
-    @patch('spotify_app.tasks.requests_url')
-    def test_albums_table_page(self, mock_func):
+
+class AlbumTableView(TestCase):
+
+    def setUp(self):
+        self.albums_and_features = [
+            AlbumFeaturesFactory()
+            for _ in range(10)
+        ]
+        self.albums = [
+            x.album
+            for x in self.albums_and_features
+        ]
+        self.features = [
+            x.features
+            for x in self.albums_and_features
+        ]
+
         _add_access_token_to_client_session(self.client)
+
+    def test_url_and_template(self):
         response = self.client.get('/albums_table/', follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'albums_table.html')
+
+    def test_all_album_names_in_html(self):
+        response = self.client.get('/albums_table/', follow=True)
+        for album in self.albums:
+            self.assertContains(response, album.name)
+
+    def test_all_artist_names_in_html(self):
+        response = self.client.get('/albums_table/', follow=True)
+        for album in self.albums:
+            self.assertContains(response, album.artist.name)
+
+    def test_all_features_in_html(self):
+        features_names = Features().get_fields_names
+
+        response = self.client.get('/albums_table/', follow=True)
+
+        for feat_name in features_names:
+            self.assertContains(response, feat_name.capitalize())
+
+    def test_all_features_values_in_html(self):
+        features_names = Features().get_fields_names
+
+        response = self.client.get('/albums_table/', follow=True)
+
+        for feature in self.features:
+            for feat_name in features_names:
+                x_feat = getattr(feature, feat_name)
+                self.assertContains(response, x_feat)
 
 
 class TrackDetailView(TestCase):
@@ -90,7 +136,7 @@ class TrackDetailView(TestCase):
         self.assertContains(response, self.track.artist.name)
 
     def test_all_features_in_html(self):
-        features_names = self.features.get_fields_names
+        features_names = Features().get_fields_names
 
         response = self.client.get(
             f'/track/{self.track.id}/'
@@ -100,7 +146,7 @@ class TrackDetailView(TestCase):
             self.assertContains(response, feat_name.capitalize())
 
     def test_all_features_values_in_html(self):
-        features_names = self.features.get_fields_names
+        features_names = Features().get_fields_names
 
         response = self.client.get(
             f'/track/{self.track.id}/'
@@ -165,7 +211,7 @@ class AlbumDetailView(TestCase):
             self.assertContains(response, track.name)
 
     def test_all_features_in_html(self):
-        features_names = self.features.get_fields_names
+        features_names = Features().get_fields_names
 
         response = self.client.get(
             f'/album/{self.album.id}/'
@@ -174,16 +220,16 @@ class AlbumDetailView(TestCase):
         for feat_name in features_names:
             self.assertContains(response, feat_name.capitalize())
 
-    # def test_all_features_values_in_html(self):
-    #     features_names = self.features.get_fields_names
+    def test_all_features_values_in_html(self):
+        features_names = Features().get_fields_names
 
-    #     response = self.client.get(
-    #         f'/album/{self.album.id}/'
-    #     )
+        response = self.client.get(
+            f'/album/{self.album.id}/'
+        )
 
-    #     for feat_name in features_names:
-    #         x_feat = getattr(self.features, feat_name)
-    #         self.assertContains(response, x_feat)
+        for feat_name in features_names:
+            x_feat = getattr(self.features, feat_name)
+            self.assertContains(response, x_feat)
 
     def test_all_features_values_for_chart_in_html(self):
         features_values = self.features.get_features_for_chart()
