@@ -90,10 +90,13 @@ class AlbumDetailView(View):
         album_features = album.albumfeatures_set.get()
         features = album_features.features
 
+        chart_numbers = features.get_features_for_chart()
+
         ctx = {
             "album": album,
             "tracks": album.tracks.all(),
-            "album_avg": features.get_features_for_chart(),
+            "features": features,
+            "chart": chart_numbers,
         }
         return render(request, "album.html", ctx)
 

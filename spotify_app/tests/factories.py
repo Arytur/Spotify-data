@@ -119,5 +119,5 @@ class AlbumFeaturesFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.AlbumFeatures
 
-    track = factory.SubFactory(AlbumFactory)
+    album = factory.SubFactory(AlbumFactory)
     features = factory.SubFactory(FeaturesFactory)

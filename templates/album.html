@@ -39,13 +39,13 @@
         <tbody>
 
             <tr>
-                <td>{{ album.danceability|floatformat:3 }}</td>
-                <td>{{ album.speechiness|floatformat:3 }}</td>
-                <td>{{ album.acousticness|floatformat:3 }}</td>
-                <td>{{ album.valence|floatformat:3 }}</td>
-                <td>{{ album.instrumentalness|floatformat:3 }}</td>
-                <td>{{ album.energy|floatformat:3 }}</td>
-                <td>{{ album.liveness|floatformat:3 }}</td>
+                <td>{{ features.danceability|floatformat:3 }}</td>
+                <td>{{ features.speechiness|floatformat:3 }}</td>
+                <td>{{ features.acousticness|floatformat:3 }}</td>
+                <td>{{ features.valence|floatformat:3 }}</td>
+                <td>{{ features.instrumentalness|floatformat:3 }}</td>
+                <td>{{ features.energy|floatformat:3 }}</td>
+                <td>{{ features.liveness|floatformat:3 }}</td>
             </tr>
         </tbody>
     </table><br>
@@ -62,7 +62,7 @@
               </tr>
             </thead>
             <tbody>
-            {% for item in album_avg %}
+            {% for item in chart %}
               <tr>
                  <th scope="row"></th>
                  <td>{{ item }}</td>
