@@ -17,7 +17,7 @@ from .tasks import (
     get_spotify_playlists,
     get_playlist_tracks,
     get_search_results,
-    get_artist_albums,
+    get_artist_and_albums,
 )
 
 
@@ -110,23 +110,10 @@ class AlbumTableView(View):
 
 @method_decorator(token_validation, name="dispatch")
 class ArtistDetailView(View):
+    # TODO: Refactor this code. Save albums?
     def get(self, request, artist_id):
-        artist = get_artist_albums(request, artist_id)
-        return render(request, "artist.html", {"artist": artist})
-
-
-@method_decorator(token_validation, name="dispatch")
-class SpotifyPlaylistsView(View):
-    def get(self, request):
-        playlists = get_spotify_playlists(request)
-        return render(request, "spotify_playlists.html", {'playlists': playlists})
-
-
-@method_decorator(token_validation, name="dispatch")
-class PlaylistDetailView(View):
-    def get(self, request, playlist_id):
-        playlist_tracks = get_playlist_tracks(request, playlist_id)
-        return render(request, "playlist.html", {"playlist_tracks": playlist_tracks})
+        artist, albums = get_artist_and_albums(request, artist_id)
+        return render(request, "artist.html", {"artist": artist, 'albums': albums})
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -136,6 +123,21 @@ class SearchView(View):
         result = get_search_results(request, searching)
         result_list = result["artists"]
         return render(request, "search.html", {"result_list": result_list})
+
+# TODO: Remove playlist
+@method_decorator(token_validation, name="dispatch")
+class SpotifyPlaylistsView(View):
+    def get(self, request):
+        playlists = get_spotify_playlists(request)
+        return render(request, "spotify_playlists.html", {'playlists': playlists})
+
+
+# TODO: Remove playlist
+@method_decorator(token_validation, name="dispatch")
+class PlaylistDetailView(View):
+    def get(self, request, playlist_id):
+        playlist_tracks = get_playlist_tracks(request, playlist_id)
+        return render(request, "playlist.html", {"playlist_tracks": playlist_tracks})
 
 
 class Callback(View):

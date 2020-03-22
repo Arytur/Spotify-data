@@ -102,6 +102,11 @@ API_ENDPOINTS = dict(
         ("track_audio_feature", "{}/audio-features/".format(SPOTIFY_API_URL)),
         # https://api.spotify.com/v1/search
         ("search", ("{}/search?q=".format(SPOTIFY_API_URL), "&type=artist")),
+        # https://api.spotify.com/v1/artists/{id}
+        (
+            "artist",
+            ("{}/artists/".format(SPOTIFY_API_URL)),
+        ),
         # https://api.spotify.com/v1/artists/{id}/albums
         (
             "artist_albums",
