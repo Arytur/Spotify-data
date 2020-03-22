@@ -13,6 +13,9 @@ from .factories import (
     TrackFeaturesFactory,
 )
 
+# TODO: check urls
+# TODO: check images
+
 
 def _add_access_token_to_client_session(client):
     session = client.session
@@ -46,28 +49,56 @@ class CallbackView(TestCase):
         self.assertRedirects(response, '/')
 
 
-class TestUrlsAndTemplatesUsed(TestCase):
+class HomePageView(TestCase):
 
     def setUp(self):
+        self.albums = [
+            AlbumFactory()
+            for _ in range(10)
+        ]
         _add_access_token_to_client_session(self.client)
 
-    @patch('spotify_app.tasks.requests_url')
-    def test_home_page(self, mock_func):
-        json_file = open('spotify_app/tests/fixtures/new_releases_raw.json')
-        resp_file = json.load(json_file)
-        mock_func.return_value = resp_file
-
+    @patch('spotify_app.views.get_new_releases')
+    def test_url_and_template(self, mock_func):
+        mock_func.return_value = self.albums
         response = self.client.get('/', follow=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'index.html')
 
-    @patch('spotify_app.tasks.requests_url')
-    def test_recently_played_page(self, mock_func):
-        response = self.client.get('/recently_played/', follow=True)
+    @patch('spotify_app.views.get_new_releases')
+    def test_all_albums_in_html(self, mock_func):
+        mock_func.return_value = self.albums
+        response = self.client.get('/', follow=True)
+
+        for album in self.albums:
+            self.assertContains(response, album.name)
+
+
+class UserRecentlyPlayedView(TestCase):
+
+    def setUp(self):
+        self.tracks = [
+            TrackFactory()
+            for _ in range(20)
+        ]
+        _add_access_token_to_client_session(self.client)
+
+    @patch('spotify_app.views.get_user_recently_played')
+    def test_url_and_template(self, mock_func):
+        mock_func.return_value = self.tracks
+        response = self.client.get('/recently_played', follow=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'recently_played.html')
+
+    @patch('spotify_app.views.get_user_recently_played')
+    def test_all_tracks_in_html(self, mock_func):
+        mock_func.return_value = self.tracks
+        response = self.client.get('/recently_played', follow=True)
+
+        for track in self.tracks:
+            self.assertContains(response, track.name)
 
 
 class TrackTableView(TestCase):
@@ -396,6 +427,3 @@ class SearchView(TestCase):
         response = self.client.get(f'/search/?q={searching_artist}', follow=True)
         self.assertContains(response, searching_artist)
         self.assertContains(response, '0')
-
-
-

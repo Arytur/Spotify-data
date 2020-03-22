@@ -26,7 +26,7 @@ def get_new_releases(request):
 def get_user_recently_played(request):
     url = API_ENDPOINTS["user_recently_played"]
     results = requests_url(request, url)
-    return results["items"]
+    return results["items"]["track"]
 
 
 def get_album(request, album_id):
