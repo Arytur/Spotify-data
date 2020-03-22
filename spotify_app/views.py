@@ -1,12 +1,8 @@
-import json
-
-import requests
-
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
 
-from .api_endpoints import REDIRECT_URI, BASE64, SPOTIFY_TOKEN_URL
+from .api_endpoints import save_access_token_to_client_session
 from .decorators import token_validation
 from .models import Album, AlbumFeatures, Track, TrackFeatures
 from .tasks import (
@@ -143,26 +139,7 @@ class PlaylistDetailView(View):
 class Callback(View):
     def get(self, request):
         if "code" in request.GET:
-
-            # get token from URL
-            auth_token = request.GET.get("code")
-
-            code_payload = {
-                "grant_type": "authorization_code",
-                "code": auth_token,
-                "redirect_uri": REDIRECT_URI,
-            }
-            headers = {"Authorization": "Basic {}".format(BASE64)}
-            post_request = requests.post(
-                SPOTIFY_TOKEN_URL, data=code_payload, headers=headers
-            )
-            response_data = json.loads(post_request.text)
-
-            # save token to session
-            request.session["access_token"] = response_data["access_token"]
-            request.session["refresh_token"] = response_data["refresh_token"]
-            request.session.set_expiry(response_data["expires_in"])
-
+            save_access_token_to_client_session(request)
             return redirect("/")
         else:
             return render(request, "callback.html")
