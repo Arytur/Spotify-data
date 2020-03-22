@@ -1,4 +1,3 @@
-import json
 from unittest.mock import patch
 
 from django.urls import reverse
@@ -13,9 +12,6 @@ from .factories import (
     TrackFactory,
     TrackFeaturesFactory,
 )
-
-# TODO: check urls
-# TODO: check images
 
 
 def _add_access_token_to_client_session(client):

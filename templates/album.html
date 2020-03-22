@@ -14,43 +14,43 @@
     <br>
     <h3 style="border-bottom: 2px solid white; padding: 4px;"> {{ album.artist.name }} - {{ album.name }}</h3>
     <br>
-    <img src="{{ album.image }}" style="float: right; margin-right: 40px">
+    <img src="{{ album.image }}" style="float: left; margin-right: 40px">
     <ul style="float: left; 50%">
     {% for track in tracks %}
         <a href="{% url 'track' track_id=track.id %}" class="list-group-item list-group-item-action">
         <li>{{ forloop.counter }}. {{ track.name }}</li>
         </a><br>
     {% endfor %}
-    </ul><hr><br>
+    </ul><br>
 
-    <table style="width: 35%; margin: auto" id="data">
-        <thead>
-            <tr>
-                <th>Danceability</th>
-                <th>Speechiness</th>
-                <th>Acousticness</th>
-                <th>Valence</th>
-                <th>Instrumentalness</th>
-                <th>Energy</th>
-                <th>Liveness</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ features.danceability|floatformat:3 }}</td>
-                <td>{{ features.speechiness|floatformat:3 }}</td>
-                <td>{{ features.acousticness|floatformat:3 }}</td>
-                <td>{{ features.valence|floatformat:3 }}</td>
-                <td>{{ features.instrumentalness|floatformat:3 }}</td>
-                <td>{{ features.energy|floatformat:3 }}</td>
-                <td>{{ features.liveness|floatformat:3 }}</td>
-            </tr>
-        </tbody>
-    </table><br>
+    <div class="chart" style="float: right; width: 35%; margin: 400px: auto">
+        <table>
+            <thead>
+                <tr>
+                    <th>Danceability</th>
+                    <th>Speechiness</th>
+                    <th>Acousticness</th>
+                    <th>Valence</th>
+                    <th>Instrumentalness</th>
+                    <th>Energy</th>
+                    <th>Liveness</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ features.danceability|floatformat:3 }}</td>
+                    <td>{{ features.speechiness|floatformat:3 }}</td>
+                    <td>{{ features.acousticness|floatformat:3 }}</td>
+                    <td>{{ features.valence|floatformat:3 }}</td>
+                    <td>{{ features.instrumentalness|floatformat:3 }}</td>
+                    <td>{{ features.energy|floatformat:3 }}</td>
+                    <td>{{ features.liveness|floatformat:3 }}</td>
+                </tr>
+            </tbody>
+        </table><br>
 
 
 
-    <div class="chart" style="width: 30%; margin: auto">
         <h3 style="font-weight: bolder">Chart - album features</h3>
           <table id="data-table" border="1" cellpadding="20" cellspacing="50">
             <thead>
