@@ -9,12 +9,12 @@
             <div class="card-body">
                 <h5 class="card-title">{{ release.artists.0.name }}</h5>
                 <p class="card-text">{{ release.name }}</p>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">
-                        <a href="{% url 'album' release.id %}" class=" btn btn-success">Show</a>
-                    </small>
-                </div>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">
+                    <a href="{% url 'album' release.id %}" class=" btn btn-success">Show</a>
+                </small>
+            </div>
         </div>
     {% endfor %}
     </div>

@@ -2,12 +2,12 @@
 
 {% block content %}
     <div style="width: 60%; margin: auto">
-    {% if recently_played %}
-      {% for track in recently_played %}
-              <a href="{% url 'track' track_id=track.id %}" class="list-group-item list-group-item-action">
-                  {{ track.artists.0.name }} - &ensp; {{ track.name }}
-              </a><br>
-      {% endfor %}
+    {% if recently_played_tracks %}
+        {% for track in recently_played_tracks %}
+        <a href="{% url 'track' track_id=track.id %}" class="list-group-item list-group-item-action">
+            {{ track.artists.0.name }} - &ensp; {{ track.name }}
+        </a><br>
+        {% endfor %}
     {% endif %}
     </div>
 
