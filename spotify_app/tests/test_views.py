@@ -8,6 +8,7 @@ from .factories import (
     AlbumFactory,
     AlbumFeaturesFactory,
     ArtistFactory,
+    SearchArtistFactory,
     TrackFactory,
     TrackFeaturesFactory,
 )
@@ -31,6 +32,18 @@ class CallbackView(TestCase):
         response = self.client.get('/')
 
         self.assertRedirects(response, '/callback/q')
+
+    @patch('spotify_app.tasks.requests_url')
+    @patch('spotify_app.views.save_access_token_to_client_session')
+    def test_redirect_from_callback_to_home_page(self, mock_save, mock_func):
+        _add_access_token_to_client_session(self.client)
+        json_file = open('spotify_app/tests/fixtures/new_releases_raw.json')
+        resp_file = json.load(json_file)
+        mock_func.return_value = resp_file
+
+        response = self.client.get('/callback/q?code=ABCD123')
+
+        self.assertRedirects(response, '/')
 
 
 class TestUrlsAndTemplatesUsed(TestCase):
@@ -343,5 +356,46 @@ class ArtistDetailView(TestCase):
         response = self.client.get(f'/artist/{self.artist.id}/')
 
         for album in self.albums:
-            self.assertContains(response, self.artist.name)
             self.assertContains(response, album.name)
+
+
+class SearchView(TestCase):
+
+    def setUp(self):
+        self.searching_artist = 'found'
+        self.found_artists = [
+            SearchArtistFactory()
+            for _ in range(5)
+        ]
+        _add_access_token_to_client_session(self.client)
+
+    @patch('spotify_app.views.get_search_results')
+    def test_url_and_template(self, mock_search_results):
+        mock_search_results.return_value = self.found_artists, '5'
+
+        response = self.client.get(f'/search/?q={self.searching_artist}', follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'search.html')
+
+    @patch('spotify_app.views.get_search_results')
+    def test_found_searching_artist(self, mock_search_results):
+        mock_search_results.return_value = self.found_artists, '5'
+
+        response = self.client.get(f'/search/?q={self.searching_artist}', follow=True)
+        self.assertContains(response, self.searching_artist)
+        self.assertContains(response, '5')
+        for artist in self.found_artists:
+            self.assertContains(response, artist.name)
+
+    @patch('spotify_app.views.get_search_results')
+    def test_not_found_searching_artist(self, mock_search_results):
+        mock_search_results.return_value = [], '0'
+        searching_artist = f'not_{self.searching_artist}'
+
+        response = self.client.get(f'/search/?q={searching_artist}', follow=True)
+        self.assertContains(response, searching_artist)
+        self.assertContains(response, '0')
+
+
+

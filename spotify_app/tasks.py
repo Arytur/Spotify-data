@@ -70,7 +70,10 @@ def get_track_audio_features(request, track_id):
 
 def get_search_results(request, searching):
     url = API_ENDPOINTS["search"][0] + searching + API_ENDPOINTS["search"][1]
-    return requests_url(request, url)
+    results = requests_url(request, url)
+    artists = results['artists']['items']
+    found_total = results['artists']['total']
+    return artists, found_total
 
 
 def get_artist(request, artist_id):

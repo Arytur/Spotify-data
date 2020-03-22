@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h3 style="text-align: center; font-weight: bolder">{{ result_list.total }} results found.</h3><hr>
+    <h3 style="text-align: center; font-weight: bolder">Seaching for "{{ searching }}" - {{ total }} results found.</h3><hr>
 
-{% for result in result_list.items %}
-    <div style="width: 70%; margin: auto">
-        <a href="{% url 'artist' result.id %}" class="list-group-item list-group-item-action">
-            {{ result.name }}
-            <i style="float: right">{{ result.popularity }}</i>
-        </a><br>
-    </div>
-{% endfor %}
+    {% for result in result_list %}
+        <div style="width: 70%; margin: auto">
+            <a href="{% url 'artist' result.id %}" class="list-group-item list-group-item-action">
+                {{ result.name }}
+                <i style="float: right">{{ result.popularity }}</i>
+            </a><br>
+        </div>
+    {% endfor %}
 
 {% endblock %}

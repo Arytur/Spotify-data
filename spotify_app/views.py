@@ -116,9 +116,13 @@ class ArtistDetailView(View):
 class SearchView(View):
     def get(self, request):
         searching = request.GET.get("q")
-        result = get_search_results(request, searching)
-        result_list = result["artists"]
-        return render(request, "search.html", {"result_list": result_list})
+        result_list, total = get_search_results(request, searching)
+        ctx = {
+            'searching':  searching,
+            "result_list": result_list,
+            'total': total
+        }
+        return render(request, "search.html", ctx)
 
 # TODO: Remove playlist
 @method_decorator(token_validation, name="dispatch")
