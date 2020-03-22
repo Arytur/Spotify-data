@@ -73,9 +73,16 @@ def get_search_results(request, searching):
     return requests_url(request, url)
 
 
-def get_artist_albums(request, artist):
-    url = API_ENDPOINTS["artist_albums"][0] + artist + API_ENDPOINTS["artist_albums"][1]
+def get_artist(request, artist_id):
+    url = API_ENDPOINTS['artist'] + artist_id
     return requests_url(request, url)
+
+
+def get_artist_and_albums(request, artist_id):
+    url = API_ENDPOINTS["artist_albums"][0] + artist_id + API_ENDPOINTS["artist_albums"][1]
+    artist_name = get_artist(request, artist_id)['name']
+    results = requests_url(request, url)
+    return artist_name, results["items"]
 
 
 # CREATE

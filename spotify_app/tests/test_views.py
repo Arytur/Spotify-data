@@ -7,6 +7,7 @@ from spotify_app.models import Features
 from .factories import (
     AlbumFactory,
     AlbumFeaturesFactory,
+    ArtistFactory,
     TrackFactory,
     TrackFeaturesFactory,
 )
@@ -36,7 +37,6 @@ class TestUrlsAndTemplatesUsed(TestCase):
 
     def setUp(self):
         _add_access_token_to_client_session(self.client)
-
 
     @patch('spotify_app.tasks.requests_url')
     def test_home_page(self, mock_func):
@@ -309,3 +309,39 @@ class AlbumDetailView(TestCase):
 
         response = self.client.get(f'/album/{album_id}/')
         self.assertContains(response, album.name)
+
+
+class ArtistDetailView(TestCase):
+
+    def setUp(self):
+        self.artist = ArtistFactory()
+        self.albums = [
+            AlbumFactory(artist=self.artist)
+            for _ in range(6)
+        ]
+
+        _add_access_token_to_client_session(self.client)
+
+    @patch('spotify_app.views.get_artist_and_albums')
+    def test_url_and_template(self, mock_artist_albums):
+        mock_artist_albums.return_value = self.artist.name, self.albums
+        response = self.client.get(f'/artist/{self.artist.id}/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'artist.html')
+
+    @patch('spotify_app.views.get_artist_and_albums')
+    def test_artist_in_html(self, mock_artist_albums):
+        mock_artist_albums.return_value = self.artist.name, self.albums
+        response = self.client.get(f'/artist/{self.artist.id}/')
+
+        self.assertContains(response, self.artist.name)
+
+    @patch('spotify_app.views.get_artist_and_albums')
+    def test_all_albums_in_html(self, mock_artist_albums):
+        mock_artist_albums.return_value = self.artist.name, self.albums
+        response = self.client.get(f'/artist/{self.artist.id}/')
+
+        for album in self.albums:
+            self.assertContains(response, self.artist.name)
+            self.assertContains(response, album.name)
