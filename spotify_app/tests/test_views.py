@@ -14,9 +14,6 @@ from .factories import (
     TrackFeaturesFactory,
 )
 
-# TODO: check urls
-# TODO: check images
-
 
 def _add_access_token_to_client_session(client):
     session = client.session

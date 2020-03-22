@@ -9,3 +9,4 @@ branch = True
 [report]
 show_missing = True
 skip_covered = True
+exclude_lines = def __str__
