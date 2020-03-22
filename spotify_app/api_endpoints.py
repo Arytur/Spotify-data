@@ -98,10 +98,10 @@ PLAYLISTS_URI = dict(
 
 API_ENDPOINTS = dict(
     [
-        # https://developer.spotify.com/web-api/web-api-personalization-endpoints/get-recently-played/
+        # https://api.spotify.com/v1//me/player/recently-played
         (
             "user_recently_played",
-            "{}/{}/{}".format(USER_PROFILE_ENDPOINT, "player", "recently-played"),
+            "{}/me/player/recently-played".format(SPOTIFY_API_URL),
         ),
         # https://api.spotify.com/v1/browse/new-releases
         ("new_releases", "{}/{}/{}".format(SPOTIFY_API_URL, "browse", "new-releases")),
