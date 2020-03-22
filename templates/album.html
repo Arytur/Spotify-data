@@ -2,21 +2,20 @@
 {% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/bar.css' %}">
-<link rel="stylesheet" href="{% static 'css/table-style.css' %}">
-<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-  crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/bar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table-style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous"></script>
     <script src="{% static 'js/graph.js' %}"></script>
 {% endblock %}
-
 
 {% block content %}
 
     <br>
     <h3 style="border-bottom: 2px solid white; padding: 4px;"> {{ album.artist.name }} - {{ album.name }}</h3>
-    <img src="{{ album.album_image }}" style="float: right; margin-right: 40px">
     <br>
-    <ul style="float: left; width: 50%">
+    <img src="{{ album.image }}" style="float: right; margin-right: 40px">
+    <ul style="float: left; 50%">
     {% for track in tracks %}
         <a href="{% url 'track' track_id=track.id %}" class="list-group-item list-group-item-action">
         <li>{{ forloop.counter }}. {{ track.name }}</li>
@@ -24,7 +23,7 @@
     {% endfor %}
     </ul><hr><br>
 
-    <table style="width: 60%; margin: auto" id="data">
+    <table style="width: 35%; margin: auto" id="data">
         <thead>
             <tr>
                 <th>Danceability</th>
@@ -37,7 +36,6 @@
             </tr>
         </thead>
         <tbody>
-
             <tr>
                 <td>{{ features.danceability|floatformat:3 }}</td>
                 <td>{{ features.speechiness|floatformat:3 }}</td>
@@ -52,7 +50,7 @@
 
 
 
-    <div class="chart" style="width: 50%; margin: 5%; float: left">
+    <div class="chart" style="width: 30%; margin: auto">
         <h3 style="font-weight: bolder">Chart - album features</h3>
           <table id="data-table" border="1" cellpadding="20" cellspacing="50">
             <thead>
@@ -72,6 +70,5 @@
             </tbody>
           </table>
     </div>
-
 
 {% endblock %}

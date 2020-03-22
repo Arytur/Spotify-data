@@ -30,15 +30,24 @@ class Index(View):
 
 @method_decorator(token_validation, name="dispatch")
 class UserRecentlyPlayedView(View):
+    """
+    Display a list with user recently played tracks.
+    """
+
     def get(self, request):
-        recently_played = get_user_recently_played(request)
+        recently_played_tracks = get_user_recently_played(request)
         return render(
-            request, "recently_played.html", {"recently_played": recently_played}
+            request, "recently_played.html", {"recently_played_tracks": recently_played_tracks}
         )
 
 
 @method_decorator(token_validation, name="dispatch")
 class TrackDetailView(View):
+    """
+    Display collected info about track.
+    image, features.
+    """
+
     def get(self, request, track_id):
 
         try:
@@ -57,7 +66,7 @@ class TrackDetailView(View):
 
 class TracksTableView(View):
     """
-    Display table with all tracks collected.
+    Display table with all tracks saved in the  db.
     """
 
     def get(self, request):
@@ -73,7 +82,7 @@ class TracksTableView(View):
 class AlbumDetailView(View):
     """
     Display collected info about album.
-    image, tracks, features
+    image, tracks, features.
     """
 
     def get(self, request, album_id):
@@ -98,6 +107,10 @@ class AlbumDetailView(View):
 
 
 class AlbumTableView(View):
+    """
+    Display table with all albums saved in the  db.
+    """
+
     def get(self, request):
         albums = Album.objects.all()[:10]
         albums_features = AlbumFeatures.objects.filter(album__in=albums)
@@ -106,7 +119,9 @@ class AlbumTableView(View):
 
 @method_decorator(token_validation, name="dispatch")
 class ArtistDetailView(View):
-    # TODO: Refactor this code. Save albums?
+    """
+    Display a list with all artist's albums
+    """
     def get(self, request, artist_id):
         artist, albums = get_artist_and_albums(request, artist_id)
         return render(request, "artist.html", {"artist": artist, 'albums': albums})
@@ -114,6 +129,9 @@ class ArtistDetailView(View):
 
 @method_decorator(token_validation, name="dispatch")
 class SearchView(View):
+    """
+    Display a list of artists that matches searching word.
+    """
     def get(self, request):
         searching = request.GET.get("q")
         result_list, total = get_search_results(request, searching)
@@ -141,6 +159,9 @@ class PlaylistDetailView(View):
 
 
 class Callback(View):
+    """
+    View to handle access token in session.
+    """
     def get(self, request):
         if "code" in request.GET:
             save_access_token_to_client_session(request)
