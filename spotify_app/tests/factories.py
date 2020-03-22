@@ -16,6 +16,14 @@ class ArtistFactory(factory.django.DjangoModelFactory):
     name = factory.Faker('name')
 
 
+class SearchArtistFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Artist
+
+    id = factory.fuzzy.FuzzyText(length=24, chars=CHAR_SET)
+    name = factory.fuzzy.FuzzyText(length=10, prefix='found')
+
+
 class TrackFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Track
