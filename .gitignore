@@ -6,3 +6,4 @@ ideas.txt
 spotify_app/migrations/
 .coverage
 htmlcov/
+venv/

@@ -7,6 +7,8 @@ from .models import Album, AlbumFeatures, Artist, Features, Track, TrackFeatures
 
 LOG = logging.getLogger(__name__)
 
+# TODO: create nice docs
+
 
 def requests_url(request, url):
     access_token = request.session.get("access_token")
@@ -17,29 +19,29 @@ def requests_url(request, url):
 
 # GET
 
-def get_new_releases(request):
+def get_new_releases(request):  # pragma: no cover
     url = API_ENDPOINTS["new_releases"]
     results = requests_url(request, url)
     return results["albums"]["items"]
 
 
-def get_user_recently_played(request):
+def get_user_recently_played(request):  # pragma: no cover
     url = API_ENDPOINTS["user_recently_played"]
     results = requests_url(request, url)
     return results["items"]["track"]
 
 
-def get_album(request, album_id):
+def get_album(request, album_id):  # pragma: no cover
     url = API_ENDPOINTS["album"] + album_id
     return requests_url(request, url)
 
 
-def get_track(request, track_id):
+def get_track(request, track_id):  # pragma: no cover
     url = API_ENDPOINTS["track"] + track_id
     return requests_url(request, url)
 
 
-def get_spotify_playlists(request):
+def get_spotify_playlists(request):  # pragma: no cover
 
     playlists_resp = {}
     for k, v in PLAYLISTS_URI.items():
@@ -54,7 +56,7 @@ def get_spotify_playlists(request):
     return playlists_resp
 
 
-def get_playlist_tracks(request, playlist_id):
+def get_playlist_tracks(request, playlist_id):  # pragma: no cover
     url = (
         API_ENDPOINTS["playlist_track"][0]
         + playlist_id
@@ -63,12 +65,12 @@ def get_playlist_tracks(request, playlist_id):
     return requests_url(request, url)
 
 
-def get_track_audio_features(request, track_id):
+def get_track_audio_features(request, track_id):  # pragma: no cover
     url = API_ENDPOINTS["track_audio_feature"] + track_id
     return requests_url(request, url)
 
 
-def get_search_results(request, searching):
+def get_search_results(request, searching):  # pragma: no cover
     url = API_ENDPOINTS["search"][0] + searching + API_ENDPOINTS["search"][1]
     results = requests_url(request, url)
     artists = results['artists']['items']
@@ -76,12 +78,12 @@ def get_search_results(request, searching):
     return artists, found_total
 
 
-def get_artist(request, artist_id):
+def get_artist(request, artist_id):  # pragma: no cover
     url = API_ENDPOINTS['artist'] + artist_id
     return requests_url(request, url)
 
 
-def get_artist_and_albums(request, artist_id):
+def get_artist_and_albums(request, artist_id):  # pragma: no cover
     url = API_ENDPOINTS["artist_albums"][0] + artist_id + API_ENDPOINTS["artist_albums"][1]
     artist_name = get_artist(request, artist_id)['name']
     results = requests_url(request, url)
@@ -90,7 +92,7 @@ def get_artist_and_albums(request, artist_id):
 
 # CREATE
 
-def create_artist(resp):
+def get_or_create_artist(resp):
     artist, _ = Artist.objects.get_or_create(
         id=resp["artists"][0]["id"], name=resp["artists"][0]["name"]
     )
@@ -99,7 +101,7 @@ def create_artist(resp):
 
 def create_track(request, track_id):
     track_data = get_track(request, track_id)
-    artist = create_artist(track_data)
+    artist = get_or_create_artist(track_data)
     track = Track.objects.create(id=track_id, artist=artist, name=track_data["name"])
     return track
 
@@ -127,11 +129,12 @@ def create_track_and_features(request, track_id):
 
 
 def create_album_features(tracks, album):
+
     dict_of_features = defaultdict(list)
     tracks_number = len(tracks)
 
     for track in tracks:
-        tr_feat = track.trackfeatures_set.get()
+        tr_feat = TrackFeatures.objects.get(track=track)
         feat = tr_feat.features.get_features
         for key in feat.keys():
             dict_of_features[key].append(feat[key])
@@ -166,7 +169,7 @@ def create_tracks_from_album(request, album_data):
 
 def create_album(request, album_id):
     album_data = get_album(request, album_id)
-    artist = create_artist(album_data)
+    artist = get_or_create_artist(album_data)
     album = Album.objects.create(
         id=album_data['id'],
         name=album_data["name"],
