@@ -66,7 +66,7 @@ class Features(models.Model):
         }
         return dict_of_features
 
-    def get_features_for_chart(self):
+    def get_features_for_chart(self):  # pragma: no cover
         return [int(feat * 100) for feat in self.get_features.values()]
 
 

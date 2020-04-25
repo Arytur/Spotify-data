@@ -30,7 +30,7 @@ class CallbackView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'callback.html')
 
-    def test_redirect_from_home_page_to_cllback(self):
+    def test_redirect_from_home_page_to_callback(self):
         response = self.client.get(
             reverse('index')
         )

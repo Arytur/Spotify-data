@@ -15,7 +15,7 @@ from django.core.exceptions import ImproperlyConfigured
 mykeys_file = os.path.join(settings.BASE_DIR, "mykeys.json")
 load_keys = json.load(open(mykeys_file, "r+"))
 client_id, client_secret = load_keys['id'], load_keys['secret']
-if settings.SETTINGS_MODULE != 'settings.test_settings':
+if settings.SETTINGS_MODULE != 'settings.test_settings':  # pragma: no cover
     if client_id == 'your_key' or client_secret == 'your_secret':
         error_msg = 'Set API credentials in mykeys.json'
         raise ImproperlyConfigured(error_msg)
@@ -53,7 +53,7 @@ auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
 
 
 # Context to use in authorizations/callback
-def user_context(request):
+def user_context(request):  # pragma: no cover
     ctx = {"url_args": url_args, "auth_url": auth_url}
     return ctx
 
