@@ -83,18 +83,6 @@ def save_access_token_to_client_session(request):
 SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
 USER_PROFILE_ENDPOINT = "{}/{}".format(SPOTIFY_API_URL, "me")
 
-# playlist from different decades
-PLAYLISTS_URI = dict(
-    [
-        ("sixties", "37i9dQZF1DWYoG7spxcDsi"),
-        ("seventies", "37i9dQZF1DX5vi6QexgFgr"),
-        ("eighties", "37i9dQZF1DWWC8p2yKdFrw"),
-        ("nineties", "37i9dQZF1DX1leCUq7he50"),
-        ("twentyzero", "37i9dQZF1DX5qXEz970M38"),
-        ("twentyten", "37i9dQZF1DX7bSIS915wSM"),
-    ]
-)
-
 
 API_ENDPOINTS = dict(
     [
@@ -109,19 +97,6 @@ API_ENDPOINTS = dict(
         ("album", "{}/{}/".format(SPOTIFY_API_URL, "albums")),
         # https://api.spotify.com/v1/tracks/{id}
         ("track", "{}/{}/".format(SPOTIFY_API_URL, "tracks")),
-        # https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}
-        (
-            "spotify_playlists",
-            ("{}/users/spotify/playlists/".format(SPOTIFY_API_URL), "?market=US"),
-        ),
-        # https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}/tracks
-        (
-            "playlist_track",
-            (
-                "{}/users/spotify/playlists/".format(SPOTIFY_API_URL),
-                "/tracks?market=US&limit=50",
-            ),
-        ),
         # https://api.spotify.com/v1/audio-features/{id}
         ("track_audio_feature", "{}/audio-features/".format(SPOTIFY_API_URL)),
         # https://api.spotify.com/v1/search

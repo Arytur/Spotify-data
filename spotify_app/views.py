@@ -10,8 +10,6 @@ from .tasks import (
     create_track_and_features,
     get_new_releases,
     get_user_recently_played,
-    get_spotify_playlists,
-    get_playlist_tracks,
     get_search_results,
     get_artist_and_albums,
 )
@@ -141,21 +139,6 @@ class SearchView(View):
             'total': total
         }
         return render(request, "search.html", ctx)
-
-# TODO: Remove playlist
-@method_decorator(token_validation, name="dispatch")
-class SpotifyPlaylistsView(View):
-    def get(self, request):
-        playlists = get_spotify_playlists(request)
-        return render(request, "spotify_playlists.html", {'playlists': playlists})
-
-
-# TODO: Remove playlist
-@method_decorator(token_validation, name="dispatch")
-class PlaylistDetailView(View):
-    def get(self, request, playlist_id):
-        playlist_tracks = get_playlist_tracks(request, playlist_id)
-        return render(request, "playlist.html", {"playlist_tracks": playlist_tracks})
 
 
 class Callback(View):

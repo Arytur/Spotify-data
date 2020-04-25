@@ -21,15 +21,5 @@ urlpatterns = [
     path("album/<slug:album_id>/", views.AlbumDetailView.as_view(), name="album"),
     path("albums_table/", views.AlbumTableView.as_view(), name="albums_table"),
     path("artist/<slug:artist_id>/", views.ArtistDetailView.as_view(), name="artist"),
-    path(
-        "spotify_playlists/",
-        views.SpotifyPlaylistsView.as_view(),
-        name="spotify_playlists",
-    ),
-    path(
-        "playlist/<slug:playlist_id>/",
-        views.PlaylistDetailView.as_view(),
-        name="playlist",
-    ),
     path("search/", views.SearchView.as_view(), name="search"),
 ]
