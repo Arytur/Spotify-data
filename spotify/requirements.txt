@@ -4,6 +4,7 @@ flake8==3.7.9
 psycopg2-binary==2.8.4
 responses==0.10.12
 requests==2.22.0
-pytest-django
-pytest-cov
-factory_boy
+gunicorn==20.0.4
+pytest-django==3.9.0
+pytest-cov==2.8.1
+factory-boy==2.12.0

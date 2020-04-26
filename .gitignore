@@ -1,9 +1,10 @@
 .vscode/
-db.sqlite3
 *.pyc
-.python-version
 ideas.txt
 spotify_app/migrations/
 .coverage
 htmlcov/
 venv/
+.env.prod
+.env.prod.db
+cmd.txt
