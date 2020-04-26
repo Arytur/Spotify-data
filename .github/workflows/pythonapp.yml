@@ -27,7 +27,7 @@ jobs:
     - name: Test with pytest
       env:
         SECRET_KEY: foo
-        DJANGO_SETTINGS_MODULE: settings.base
+        DJANGO_SETTINGS_MODULE: settings.test_settings
         DJANGO_ALLOWED_HOSTS: localhost 
       run: |
         cd spotify
