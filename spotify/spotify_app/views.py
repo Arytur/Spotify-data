@@ -134,7 +134,7 @@ class SearchView(View):
         searching = request.GET.get("q")
         result_list, total = get_search_results(request, searching)
         ctx = {
-            'searching':  searching,
+            'searching': searching,
             "result_list": result_list,
             'total': total
         }

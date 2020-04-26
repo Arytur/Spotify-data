@@ -13,7 +13,7 @@ from spotify_app.models import (
     Features,
     Track,
     TrackFeatures
-    )
+)
 from spotify_app.tasks import (
     create_album,
     create_album_features,

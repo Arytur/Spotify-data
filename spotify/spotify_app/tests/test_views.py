@@ -353,9 +353,7 @@ class AlbumDetailView(TestCase):
     def setUp(self):
         self.tracks = [TrackFactory() for _ in range(13)]
         self.album = AlbumFactory.create(tracks=self.tracks)
-        self.album_and_features = AlbumFeaturesFactory.create(
-           album=self.album
-        )
+        self.album_and_features = AlbumFeaturesFactory.create(album=self.album)
         self.features = self.album_and_features.features
 
         _add_access_token_to_client_session(self.client)
