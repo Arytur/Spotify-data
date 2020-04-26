@@ -1,7 +1,7 @@
 Django==3.0.3
 django-debug-toolbar==2.1
 flake8==3.7.9
-psycopg2==2.8.4
+psycopg2-binary==2.8.4
 responses==0.10.12
 requests==2.22.0
 pytest-django
