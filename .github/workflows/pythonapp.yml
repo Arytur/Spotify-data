@@ -29,5 +29,6 @@ jobs:
         SECRET_KEY: foo
         DJANGO_SETTINGS_MODULE: settings.base
       run: |
+        cd spotify
         pip install pytest
         pytest
