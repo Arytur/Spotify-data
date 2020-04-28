@@ -4,10 +4,11 @@ from django.views import View
 
 from .api_endpoints import save_access_token_to_client_session
 from .decorators import token_validation
-from .models import Album, AlbumFeatures, Track, TrackFeatures
-from .services import (
-    create_album_tracks_and_features,
-    create_track_and_features
+from .selectors import (
+    get_album_details,
+    get_albums_table,
+    get_track_details,
+    get_tracks_table,
 )
 from .tasks import (
     get_new_releases,
@@ -49,18 +50,7 @@ class TrackDetailView(View):
     """
 
     def get(self, request, track_id):
-
-        try:
-            track = Track.objects.get(id=track_id)
-        except Track.DoesNotExist:
-            track = create_track_and_features(request, track_id)
-
-        track_features = track.trackfeatures_set.get()
-        features = track_features.features
-
-        chart_numbers = features.get_features_for_chart
-
-        ctx = {"track": track, "features": features, "chart": chart_numbers}
+        ctx = get_track_details(request, track_id)
         return render(request, "track.html", ctx)
 
 
@@ -70,12 +60,8 @@ class TracksTableView(View):
     """
 
     def get(self, request):
-        tracks = Track.objects.all()[:10]
-        tracks_features = TrackFeatures.objects.filter(track__in=tracks)
-
-        return render(
-            request, "tracks_table.html", {"tracks_features": tracks_features}
-        )
+        ctx = get_tracks_table()
+        return render(request, "tracks_table.html", ctx)
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -86,23 +72,7 @@ class AlbumDetailView(View):
     """
 
     def get(self, request, album_id):
-
-        try:
-            album = Album.objects.get(id=album_id)
-        except Album.DoesNotExist:
-            album = create_album_tracks_and_features(request, album_id)
-
-        album_features = album.albumfeatures_set.get()
-        features = album_features.features
-
-        chart_numbers = features.get_features_for_chart()
-
-        ctx = {
-            "album": album,
-            "tracks": album.tracks.all(),
-            "features": features,
-            "chart": chart_numbers,
-        }
+        ctx = get_album_details(request, album_id)
         return render(request, "album.html", ctx)
 
 
@@ -112,9 +82,8 @@ class AlbumTableView(View):
     """
 
     def get(self, request):
-        albums = Album.objects.all()[:10]
-        albums_features = AlbumFeatures.objects.filter(album__in=albums)
-        return render(request, "albums_table.html", {"albums_features": albums_features})
+        ctx = get_albums_table()
+        return render(request, "albums_table.html", ctx)
 
 
 @method_decorator(token_validation, name="dispatch")
@@ -124,7 +93,8 @@ class ArtistDetailView(View):
     """
     def get(self, request, artist_id):
         artist, albums = get_artist_and_albums(request, artist_id)
-        return render(request, "artist.html", {"artist": artist, 'albums': albums})
+        ctx = {"artist": artist, 'albums': albums}
+        return render(request, "artist.html", ctx)
 
 
 @method_decorator(token_validation, name="dispatch")

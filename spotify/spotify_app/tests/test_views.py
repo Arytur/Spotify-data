@@ -328,7 +328,7 @@ class TrackDetailView(TestCase):
         for numb in features_values:
             self.assertContains(response, numb)
 
-    @patch('spotify_app.views.create_track_and_features')
+    @patch('spotify_app.services.create_track_and_features')
     def test_create_track_when_does_not_exist(self, mock_create_track):
         track_id = 'x233Ffs34kskzz'
 
@@ -435,7 +435,7 @@ class AlbumDetailView(TestCase):
         for feature_value in features_values:
             self.assertContains(response, feature_value)
 
-    @patch('spotify_app.views.create_album_tracks_and_features')
+    @patch('spotify_app.services.create_album_tracks_and_features')
     def test_create_album_when_does_not_exist(self, mock_create_album):
         album_id = '123hkaCXX123kk'
 

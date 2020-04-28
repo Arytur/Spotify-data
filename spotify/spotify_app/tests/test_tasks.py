@@ -14,7 +14,7 @@ from spotify_app.models import (
     Track,
     TrackFeatures
 )
-from spotify_app.tasks import (
+from spotify_app.services import (
     create_album,
     create_album_features,
     create_album_tracks_and_features,
@@ -23,8 +23,8 @@ from spotify_app.tasks import (
     create_track_audio_features,
     create_track_and_features,
     get_or_create_artist,
-    requests_url,
 )
+from spotify_app.tasks import requests_url
 from .factories import (
     AlbumFactory,
     FeaturesFactory,
