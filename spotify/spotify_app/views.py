@@ -5,9 +5,11 @@ from django.views import View
 from .api_endpoints import save_access_token_to_client_session
 from .decorators import token_validation
 from .models import Album, AlbumFeatures, Track, TrackFeatures
-from .tasks import (
+from .services import (
     create_album_tracks_and_features,
-    create_track_and_features,
+    create_track_and_features
+)
+from .tasks import (
     get_new_releases,
     get_user_recently_played,
     get_search_results,
