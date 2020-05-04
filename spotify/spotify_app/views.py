@@ -11,10 +11,10 @@ from .selectors import (
     get_tracks_table,
 )
 from .tasks import (
-    get_new_releases,
-    get_user_recently_played,
-    get_search_results,
     get_artist_and_albums,
+    get_new_releases,
+    get_search_results,
+    get_user_recently_played
 )
 
 

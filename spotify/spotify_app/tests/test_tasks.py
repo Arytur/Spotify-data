@@ -2,10 +2,13 @@ from decimal import Decimal
 import random
 from unittest.mock import Mock, patch
 
+import responses
+
 from django.test import RequestFactory, TestCase
 
 from spotify_app.api_endpoints import API_ENDPOINTS
 from spotify_app import tasks
+from spotify_app import services
 from spotify_app.models import (
     Album,
     AlbumFeatures,
@@ -31,8 +34,6 @@ from .factories import (
     TrackFactory,
     TrackFeaturesFactory
 )
-
-import responses
 
 
 def get_request_factory_with_session():
@@ -275,8 +276,8 @@ class TestCreateTrackAndFeatures(TestCase):
         self.track = TrackFactory()
         self.track_features = TrackFeaturesFactory(track=self.track)
 
-    @patch.object(tasks, 'create_track_audio_features')
-    @patch.object(tasks, 'create_track')
+    @patch.object(services, 'create_track_audio_features')
+    @patch.object(services, 'create_track')
     def test_create_track_and_features(self, mock_create_track, mock_create_track_audio_features):
         mock_create_track.return_value = self.track
         mock_create_track_audio_features.return_value = self.track_features
@@ -351,7 +352,7 @@ class TestCreateTracksForAlbum(TestCase):
 
         self.assertEqual(tracks_list, self.tracks)
 
-    @patch.object(tasks, 'create_track_and_features')
+    @patch.object(services, 'create_track_and_features')
     def test_create_new_tracks(self, mock_create_track_and_features):
 
         self.album_data['tracks']['items'].extend([{'id': str(x) for x in range(6, 10)}])
@@ -360,7 +361,7 @@ class TestCreateTracksForAlbum(TestCase):
 
         mock_create_track_and_features.assert_called()
 
-    @patch.object(tasks, 'create_track_and_features')
+    @patch.object(services, 'create_track_and_features')
     def test_get_tracks_and_create_new_tracks(self, mock_create_track_and_features):
 
         self.album_data['tracks']['items'].extend([{'id': track.id} for track in self.tracks])
@@ -378,9 +379,9 @@ class TestCreateAlbumTracksAndFeatures(TestCase):
     def setUp(self):
         self.request = RequestFactory()
 
-    @patch.object(tasks, 'create_album_features')
-    @patch.object(tasks, 'create_tracks_from_album')
-    @patch.object(tasks, 'create_album')
+    @patch.object(services, 'create_album_features')
+    @patch.object(services, 'create_tracks_from_album')
+    @patch.object(services, 'create_album')
     def test_create_album_tracks_and_features(self,
                                               mock_create_album,
                                               mock_create_tracks_from_album,

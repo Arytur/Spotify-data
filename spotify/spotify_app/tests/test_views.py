@@ -4,6 +4,9 @@ from django.urls import reverse
 from django.test import TestCase
 
 from spotify_app.models import Features
+from spotify_app import api_endpoints
+from spotify_app import selectors
+from spotify_app import tasks
 from .factories import (
     AlbumFactory,
     AlbumFeaturesFactory,
@@ -23,6 +26,7 @@ def _add_access_token_to_client_session(client):
 class CallbackView(TestCase):
 
     def test_url_and_template(self):
+
         response = self.client.get(
             reverse('callback')
         )
@@ -31,21 +35,25 @@ class CallbackView(TestCase):
         self.assertTemplateUsed(response, 'callback.html')
 
     def test_redirect_from_home_page_to_callback(self):
+
         response = self.client.get(
             reverse('index')
         )
 
         self.assertRedirects(response, '/callback/q')
 
-    @patch('spotify_app.views.get_new_releases')
-    @patch('spotify_app.views.save_access_token_to_client_session')
-    def test_redirect_from_callback_to_home_page(self, mock_save, mock_func):
+    @patch.object(tasks, 'get_new_releases')
+    @patch.object(api_endpoints, 'save_access_token_to_client_session')
+    def test_redirect_from_callback_to_home_page(self,
+                                                 get_new_releases_mock,
+                                                 save_access_token_to_client_session_mock):
+
         _add_access_token_to_client_session(self.client)
         self.albums = [
             AlbumFactory()
             for _ in range(10)
         ]
-        mock_func.return_value = self.albums
+        get_new_releases_mock.return_value = self.albums
 
         response = self.client.get(
             '{}{}'.format(reverse('callback'), '?code=ABCD123')
@@ -63,9 +71,10 @@ class HomePageView(TestCase):
         ]
         _add_access_token_to_client_session(self.client)
 
-    @patch('spotify_app.views.get_new_releases')
-    def test_url_and_template(self, mock_func):
-        mock_func.return_value = self.albums
+    @patch.object(tasks, 'get_new_releases')
+    def test_url_and_template(self, get_new_releases_mock):
+
+        get_new_releases_mock.return_value = self.albums
         response = self.client.get(
             reverse('index')
         )
@@ -73,9 +82,10 @@ class HomePageView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'index.html')
 
-    @patch('spotify_app.views.get_new_releases')
-    def test_all_albums_in_html(self, mock_func):
-        mock_func.return_value = self.albums
+    @patch.object(tasks, 'get_new_releases')
+    def test_all_albums_in_html(self, get_new_releases_mock):
+
+        get_new_releases_mock.return_value = self.albums
         response = self.client.get(
             reverse('index')
         )
@@ -84,8 +94,9 @@ class HomePageView(TestCase):
             self.assertContains(response, album.name)
 
     @patch('spotify_app.views.get_new_releases')
-    def test_urls_for_all_albums_in_html(self, mock_func):
-        mock_func.return_value = self.albums
+    def test_urls_for_all_albums_in_html(self, get_new_releases_mock):
+
+        get_new_releases_mock.return_value = self.albums
         response = self.client.get(
             reverse('index')
         )
@@ -328,8 +339,8 @@ class TrackDetailView(TestCase):
         for numb in features_values:
             self.assertContains(response, numb)
 
-    @patch('spotify_app.services.create_track_and_features')
-    def test_create_track_when_does_not_exist(self, mock_create_track):
+    @patch.object(selectors, 'create_track_and_features')
+    def test_create_track_when_does_not_exist(self, create_track_and_features_mock):
         track_id = 'x233Ffs34kskzz'
 
         self.client.get(
@@ -338,9 +349,9 @@ class TrackDetailView(TestCase):
 
         track = TrackFactory(id=track_id)
         track_and_features = TrackFeaturesFactory(track=track)
-        mock_create_track.return_value = track_and_features
+        create_track_and_features_mock.return_value = track_and_features
 
-        mock_create_track.assert_called_once()
+        create_track_and_features_mock.assert_called_once()
 
         response = self.client.get(
             reverse('track', args=[track_id])
@@ -435,8 +446,8 @@ class AlbumDetailView(TestCase):
         for feature_value in features_values:
             self.assertContains(response, feature_value)
 
-    @patch('spotify_app.services.create_album_tracks_and_features')
-    def test_create_album_when_does_not_exist(self, mock_create_album):
+    @patch.object(selectors, 'create_album_tracks_and_features')
+    def test_create_album_when_does_not_exist(self, create_album_tracks_and_features_mock):
         album_id = '123hkaCXX123kk'
 
         self.client.get(
@@ -445,9 +456,9 @@ class AlbumDetailView(TestCase):
 
         album = AlbumFactory(id=album_id)
         album_and_features = AlbumFeaturesFactory(album=album)
-        mock_create_album.return_value = album_and_features
+        create_album_tracks_and_features_mock.return_value = album_and_features
 
-        mock_create_album.assert_called_once()
+        create_album_tracks_and_features_mock.assert_called_once()
 
         response = self.client.get(
             reverse('album', args=[album_id])
