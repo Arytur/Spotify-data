@@ -8,3 +8,4 @@ venv/
 .env.prod
 .env.prod.db
 cmd.txt
+spotify/.mypy_cache/
