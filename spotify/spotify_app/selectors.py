@@ -1,3 +1,7 @@
+from typing import Dict
+
+from requests.models import Request
+
 from .models import (
     Album,
     AlbumFeatures,
@@ -10,7 +14,7 @@ from .services import (
 )
 
 
-def get_album_details(request, album_id):
+def get_album_details(request: Request, album_id: str) -> Dict:
 
     try:
         album = Album.objects.get(id=album_id)
@@ -31,7 +35,7 @@ def get_album_details(request, album_id):
     return ctx
 
 
-def get_albums_table():
+def get_albums_table() -> Dict:
 
     albums = Album.objects.all()[:10]
     albums_features = AlbumFeatures.objects.filter(album__in=albums)
@@ -39,7 +43,7 @@ def get_albums_table():
     return ctx
 
 
-def get_track_details(request, track_id):
+def get_track_details(request: Request, track_id: str) -> Dict:
 
     try:
         track = Track.objects.get(id=track_id)
@@ -57,11 +61,9 @@ def get_track_details(request, track_id):
     return ctx
 
 
-def get_tracks_table():
+def get_tracks_table() -> Dict:
 
     tracks = Track.objects.all()[:10]
     tracks_features = TrackFeatures.objects.filter(track__in=tracks)
     ctx = {"tracks_features": tracks_features}
     return ctx
-
-
