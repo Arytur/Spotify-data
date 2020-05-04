@@ -42,8 +42,8 @@ class CallbackView(TestCase):
 
         self.assertRedirects(response, '/callback/q')
 
-    @patch.object(tasks, 'get_new_releases')
-    @patch.object(api_endpoints, 'save_access_token_to_client_session')
+    @patch('spotify_app.views.save_access_token_to_client_session')
+    @patch('spotify_app.views.get_new_releases')
     def test_redirect_from_callback_to_home_page(self,
                                                  get_new_releases_mock,
                                                  save_access_token_to_client_session_mock):
@@ -71,7 +71,7 @@ class HomePageView(TestCase):
         ]
         _add_access_token_to_client_session(self.client)
 
-    @patch.object(tasks, 'get_new_releases')
+    @patch('spotify_app.views.get_new_releases')
     def test_url_and_template(self, get_new_releases_mock):
 
         get_new_releases_mock.return_value = self.albums
@@ -82,7 +82,7 @@ class HomePageView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'index.html')
 
-    @patch.object(tasks, 'get_new_releases')
+    @patch('spotify_app.views.get_new_releases')
     def test_all_albums_in_html(self, get_new_releases_mock):
 
         get_new_releases_mock.return_value = self.albums
