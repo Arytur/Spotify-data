@@ -1,10 +1,7 @@
-from unittest.mock import patch, MagicMock
-
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
-from spotify_app import api_endpoints
-from spotify_app.api_endpoints import save_access_token_to_client_session, SPOTIFY_TOKEN_URL
+from spotify_app.api_endpoints import SPOTIFY_TOKEN_URL
 
 import responses
 
