@@ -6,6 +6,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: spotify
 
     steps:
     - uses: actions/checkout@v1
@@ -16,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r spotify/requirements.txt
+        pip install -r requirements.txt
     - name: Lint with flake8
       run: |
         pip install flake8
@@ -30,6 +33,4 @@ jobs:
         DJANGO_SETTINGS_MODULE: settings.test_settings
         DJANGO_ALLOWED_HOSTS: localhost 
       run: |
-        cd spotify
-        pip install pytest
         pytest
