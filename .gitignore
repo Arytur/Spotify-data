@@ -1,7 +1,6 @@
 .vscode/
 *.pyc
-ideas.txt
-spotify_app/migrations/
+migrations/
 .coverage
 htmlcov/
 venv/
